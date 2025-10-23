@@ -1,0 +1,134 @@
+2025-09-22 00:00:40,618 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:00:40,729 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:01:00,262 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:01:00,347 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:01:25,041 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:01:25,123 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:01:29,184 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:01:29,255 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:02:11,512 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:02:11,571 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:02:14,208 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:02:14,266 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:02:45,442 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:02:45,504 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:02:48,114 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:02:48,195 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:02:52,100 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:02:52,152 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:03:04,433 [INFO] Pin:2347 - value.trim() 4
+2025-09-22 00:03:04,433 [INFO] Pin:2348 - Pin value PF13
+2025-09-22 00:03:27,067 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:03:27,107 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:03:29,497 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:03:29,541 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:04:07,455 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:04:07,495 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:04:17,213 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:04:17,266 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:04:26,826 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:04:26,870 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:04:29,292 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:04:29,335 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:05:22,325 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:05:22,370 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:05:31,363 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:05:31,407 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:05:35,005 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:05:35,051 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:05:37,468 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:05:37,518 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:05:41,302 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:05:41,359 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:05:45,964 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:05:46,025 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:05:48,289 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:05:48,338 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:05:50,439 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:05:50,488 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:05:52,848 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:05:52,906 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:07:22,137 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:07:22,185 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:07:24,967 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:07:25,017 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:07:34,132 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:07:34,189 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:07:47,108 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:07:47,146 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:07:49,285 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:07:49,355 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:07:51,844 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:07:51,899 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:07:55,006 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:07:55,072 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:07:57,316 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:07:57,363 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:07:59,835 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:07:59,913 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:08:02,550 [INFO] Gpio:278 - dependency for GPIO [RCC, SYS, UART4, USART1, USART2]
+2025-09-22 00:08:02,618 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-09-22 00:08:40,438 [INFO] Pin:2347 - value.trim() 2DB
+2025-09-22 00:08:40,438 [INFO] Pin:2348 - Pin value PG8
+2025-09-22 00:08:48,158 [INFO] Pin:2347 - value.trim() 2DB
+2025-09-22 00:08:48,158 [INFO] Pin:2348 - Pin value PG8
+2025-09-22 00:09:44,469 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 754715856 Bytes (1073741824)
+2025-09-22 00:09:47,567 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 743707856 Bytes (1073741824)
+2025-09-22 00:09:48,372 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 803476688 Bytes (1073741824)
+2025-09-22 00:09:48,728 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: SYS
+2025-09-22 00:09:48,728 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: RCC
+2025-09-22 00:09:48,728 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: NVIC
+2025-09-22 00:09:48,728 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: USART
+2025-09-22 00:09:48,728 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: USART
+2025-09-22 00:09:48,728 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: CORTEX_M7
+2025-09-22 00:09:48,728 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: UART
+2025-09-22 00:09:48,729 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: GPIO
+2025-09-22 00:09:48,730 [INFO] CodeGenerator:892 - code generatio: config db path: C:\ST\STM32CubeIDE_1.19.0\STM32CubeIDE\plugins\com.st.stm32cube.common.mx_6.15.0.202507011659\\db\
+2025-09-22 00:09:48,947 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\MXTmpFiles\license.tmp_save
+2025-09-22 00:09:49,227 [INFO] CodeEngine:289 - Generated code: C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\MXTmpFiles\license.tmp
+2025-09-22 00:09:49,333 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\MXTmpFiles\gpio.tmp_save
+2025-09-22 00:09:49,489 [INFO] CodeEngine:289 - Generated code: C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\MXTmpFiles\gpio.tmp
+2025-09-22 00:09:49,791 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\MXTmpFiles\cortex.tmp_save
+2025-09-22 00:09:49,915 [INFO] CodeEngine:289 - Generated code: C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\MXTmpFiles\cortex.tmp
+2025-09-22 00:09:49,941 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\Core\Src\stm32f7xx_it.c_save
+2025-09-22 00:09:50,238 [INFO] CodeEngine:289 - Generated code: C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\Core\Src\stm32f7xx_it.c
+2025-09-22 00:09:50,246 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\Core\Inc\stm32f7xx_it.h_save
+2025-09-22 00:09:50,335 [INFO] CodeEngine:289 - Generated code: C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\Core\Inc\stm32f7xx_it.h
+2025-09-22 00:09:50,356 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\Core\Src\stm32f7xx_hal_msp.c_save
+2025-09-22 00:09:50,503 [INFO] CodeEngine:289 - Generated code: C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\Core\Src\stm32f7xx_hal_msp.c
+2025-09-22 00:09:50,508 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\MXTmpFiles\system.tmp_save
+2025-09-22 00:09:50,598 [INFO] CodeEngine:289 - Generated code: C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\MXTmpFiles\system.tmp
+2025-09-22 00:09:50,612 [INFO] CodeEngine:321 - oldGeneratedFile, C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\Core\Inc\stm32f7xx_hal_conf.h_save
+2025-09-22 00:09:50,718 [INFO] CodeEngine:345 - Generated code: C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\Core\Inc\stm32f7xx_hal_conf.h
+2025-09-22 00:09:50,762 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\Core\Inc\main.h_save
+2025-09-22 00:09:50,902 [INFO] CodeEngine:289 - Generated code: C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\Core\Inc\main.h
+2025-09-22 00:09:50,911 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\Core\Src\main.c_save
+2025-09-22 00:09:51,080 [INFO] CodeEngine:289 - Generated code: C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\Core\Src\main.c
+2025-09-22 00:09:51,619 [INFO] ProjectBuilder:3606 - Time for Copy HAL[1] : 179mS.
+2025-09-22 00:09:51,626 [INFO] ProjectBuilder:5216 - Project Generator version: 4.7.0-B52
+2025-09-22 00:09:51,755 [INFO] ConfigFileManager:1595 - The Die is : DIE449
+2025-09-22 00:09:53,301 [INFO] ProjectBuilder:5496 - Time for Generating toolchain IDE Files: 1674mS.
+2025-09-22 00:09:53,302 [INFO] ProjectBuilder:3463 - Time for Copy CMSIS : 0mS.
+2025-09-22 00:09:53,306 [INFO] ProjectBuilder:3463 - Time for Copy CMSIS : 0mS.
+2025-09-22 01:57:50,716 [INFO] WebApp:194 - Connection lost
+2025-09-22 01:57:51,178 [INFO] WebApp:191 - Connection restablished
+2025-09-22 01:57:51,243 [INFO] WebApp:194 - Connection lost
+2025-09-22 01:57:51,372 [INFO] WebApp:191 - Connection restablished
+2025-09-22 01:58:06,676 [INFO] WebApp:194 - Connection lost
+2025-09-22 01:58:06,792 [INFO] WebApp:191 - Connection restablished
+2025-09-22 01:59:20,657 [INFO] WebApp:194 - Connection lost
+2025-09-22 01:59:20,800 [INFO] WebApp:191 - Connection restablished
+2025-09-22 10:12:05,945 [INFO] WebApp:194 - Connection lost
+2025-09-22 10:12:06,263 [INFO] WebApp:191 - Connection restablished
+2025-09-22 12:42:44,062 [INFO] WebApp:194 - Connection lost
+2025-09-22 12:42:44,216 [INFO] WebApp:191 - Connection restablished
+2025-09-22 12:42:50,082 [INFO] WebApp:194 - Connection lost
+2025-09-22 12:42:50,214 [INFO] WebApp:191 - Connection restablished
+2025-09-22 12:55:19,753 [INFO] WebApp:194 - Connection lost
+2025-09-22 12:55:19,906 [INFO] WebApp:191 - Connection restablished
+2025-09-22 12:55:22,694 [INFO] WebApp:194 - Connection lost
+2025-09-22 12:55:22,840 [INFO] WebApp:191 - Connection restablished
+2025-09-22 12:55:36,135 [INFO] WebApp:194 - Connection lost
+2025-09-22 12:55:36,278 [INFO] WebApp:191 - Connection restablished
+2025-09-22 12:55:37,680 [INFO] WebApp:194 - Connection lost
+2025-09-22 12:55:37,807 [INFO] WebApp:191 - Connection restablished

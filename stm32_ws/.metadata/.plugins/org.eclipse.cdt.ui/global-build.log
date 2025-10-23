@@ -1,0 +1,155 @@
+00:28:17 **** Incremental Build of configuration Debug for project m_field_stm32 ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:167:37: warning: format '%X' expects argument of type 'unsigned int', but argument 2 has type 'sample_t *' [-Wformat=]
+  167 |   printf("Sample address start = 0x%X end = 0x%x\n", sample, &(sample[SAMPLE_READ_MAX-1]));
+      |                                    ~^                ~~~~~~
+      |                                     |                |
+      |                                     unsigned int     sample_t *
+../Core/Src/main.c:167:48: warning: format '%x' expects argument of type 'unsigned int', but argument 3 has type 'sample_t *' [-Wformat=]
+  167 |   printf("Sample address start = 0x%X end = 0x%x\n", sample, &(sample[SAMPLE_READ_MAX-1]));
+      |                                               ~^             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                |             |
+      |                                                unsigned int  sample_t *
+../Core/Src/main.c:168:21: warning: format '%X' expects argument of type 'unsigned int', but argument 2 has type 'sample_t *' [-Wformat=]
+  168 |   printf("head = 0x%X tail = 0x%x\n", head, tail);
+      |                    ~^                 ~~~~
+      |                     |                 |
+      |                     unsigned int      sample_t *
+../Core/Src/main.c:168:33: warning: format '%x' expects argument of type 'unsigned int', but argument 3 has type 'sample_t *' [-Wformat=]
+  168 |   printf("head = 0x%X tail = 0x%x\n", head, tail);
+      |                                ~^           ~~~~
+      |                                 |           |
+      |                                 |           sample_t *
+      |                                 unsigned int
+../Core/Src/main.c:210:17: warning: implicit declaration of function 'read_adc2'; did you mean 'read_adc'? [-Wimplicit-function-declaration]
+  210 |                 read_adc2();
+      |                 ^~~~~~~~~
+      |                 read_adc
+../Core/Src/main.c:131:20: warning: unused variable 'str' [-Wunused-variable]
+  131 |         const char str[100] = "Hello from STM32\n";
+      |                    ^~~
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:545:13: warning: conflicting types for 'read_adc2'; have 'void()'
+  545 | inline void read_adc2(){
+      |             ^~~~~~~~~
+../Core/Src/main.c:210:17: note: previous implicit declaration of 'read_adc2' with type 'void()'
+  210 |                 read_adc2();
+      |                 ^~~~~~~~~
+../Core/Src/main.c: In function 'read_adc2':
+../Core/Src/main.c:555:33: warning: unused variable 'counter_last' [-Wunused-variable]
+  555 |         uint32_t counter_first, counter_last;
+      |                                 ^~~~~~~~~~~~
+../Core/Src/main.c:555:18: warning: unused variable 'counter_first' [-Wunused-variable]
+  555 |         uint32_t counter_first, counter_last;
+      |                  ^~~~~~~~~~~~~
+../Core/Src/main.c:550:18: warning: unused variable 'counter' [-Wunused-variable]
+  550 |         uint32_t counter;
+      |                  ^~~~~~~
+../Core/Src/main.c:549:30: warning: unused variable 'adc_value_b' [-Wunused-variable]
+  549 |         int16_t adc_value_a, adc_value_b;
+      |                              ^~~~~~~~~~~
+../Core/Src/main.c:549:17: warning: unused variable 'adc_value_a' [-Wunused-variable]
+  549 |         int16_t adc_value_a, adc_value_b;
+      |                 ^~~~~~~~~~~
+../Core/Src/main.c:548:30: warning: unused variable 'adc_data_b' [-Wunused-variable]
+  548 |         uint16_t adc_data_a, adc_data_b;
+      |                              ^~~~~~~~~~
+../Core/Src/main.c:548:18: warning: unused variable 'adc_data_a' [-Wunused-variable]
+  548 |         uint16_t adc_data_a, adc_data_b;
+      |                  ^~~~~~~~~~
+../Core/Src/main.c: In function 'read_adc':
+../Core/Src/main.c:661:40: warning: format '%d' expects argument of type 'int', but argument 2 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+  661 |         printf ("Sample read period = %d cycles\n", counter_last - counter_first);
+      |                                       ~^            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                        |                         |
+      |                                        int                       uint32_t {aka long unsigned int}
+      |                                       %ld
+../Core/Src/main.c: In function 'find_max':
+../Core/Src/main.c:690:82: warning: format '%d' expects argument of type 'int', but argument 5 has type 'long unsigned int' [-Wformat=]
+  690 |         printf("Max NS ADC = %d Voltage %2.4f at counter %lu, time after trig = %d.%d us\n", max_ns_adc, (max_ns_adc / 512.0) + 1.5, max_ns_t, (max_ns_t - data[0].counter) / 10, (max_ns_t - data[0].counter) % 10 );
+      |                                                                                 ~^                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                  |                                                                                          |
+      |                                                                                  int                                                                                        long unsigned int
+      |                                                                                 %ld
+../Core/Src/main.c:690:85: warning: format '%d' expects argument of type 'int', but argument 6 has type 'long unsigned int' [-Wformat=]
+  690 |         printf("Max NS ADC = %d Voltage %2.4f at counter %lu, time after trig = %d.%d us\n", max_ns_adc, (max_ns_adc / 512.0) + 1.5, max_ns_t, (max_ns_t - data[0].counter) / 10, (max_ns_t - data[0].counter) % 10 );
+      |                                                                                    ~^                                                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                     |                                                                                                                          |
+      |                                                                                     int                                                                                                                        long unsigned int
+      |                                                                                    %ld
+../Core/Src/main.c:667:28: warning: unused variable 'max_b_t' [-Wunused-variable]
+  667 |         uint32_t max_ns_t, max_b_t;
+      |                            ^~~~~~~
+../Core/Src/main.c:666:29: warning: unused variable 'max_b_adc' [-Wunused-variable]
+  666 |         int16_t max_ns_adc, max_b_adc;
+      |                             ^~~~~~~~~
+../Core/Src/main.c: In function 'find_max2':
+../Core/Src/main.c:806:50: warning: format '%d' expects argument of type 'int', but argument 4 has type 'long unsigned int' [-Wformat=]
+  806 |         printf(" Trig @ %lu, Max @ %lu, Peak at %d us\n", counter_first, max_ns_t, (max_ns_t -counter_first) / 10 );
+      |                                                 ~^                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                  |                                                           |
+      |                                                  int                                                         long unsigned int
+      |                                                 %ld
+../Core/Src/main.c:715:33: warning: variable 'counter_last' set but not used [-Wunused-but-set-variable]
+  715 |         uint32_t counter_first, counter_last;
+      |                                 ^~~~~~~~~~~~
+../Core/Src/main.c:708:30: warning: variable 'adc_value_b' set but not used [-Wunused-but-set-variable]
+  708 |         int16_t adc_value_a, adc_value_b;
+      |                              ^~~~~~~~~~~
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:77:13: warning: inline function 'get_sample' declared but never defined
+   77 | inline void get_sample();
+      |             ^~~~~~~~~~
+../Core/Src/main.c: In function 'read_adc':
+../Core/Src/main.c:661:9: warning: 'counter_last' may be used uninitialized [-Wmaybe-uninitialized]
+  661 |         printf ("Sample read period = %d cycles\n", counter_last - counter_first);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:580:33: note: 'counter_last' was declared here
+  580 |         uint32_t counter_first, counter_last;
+      |                                 ^~~~~~~~~~~~
+../Core/Src/main.c:661:9: warning: 'counter_first' may be used uninitialized [-Wmaybe-uninitialized]
+  661 |         printf ("Sample read period = %d cycles\n", counter_last - counter_first);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:580:18: note: 'counter_first' was declared here
+  580 |         uint32_t counter_first, counter_last;
+      |                  ^~~~~~~~~~~~~
+../Core/Src/main.c: In function 'find_max':
+../Core/Src/main.c:690:9: warning: 'max_ns_t' may be used uninitialized [-Wmaybe-uninitialized]
+  690 |         printf("Max NS ADC = %d Voltage %2.4f at counter %lu, time after trig = %d.%d us\n", max_ns_adc, (max_ns_adc / 512.0) + 1.5, max_ns_t, (max_ns_t - data[0].counter) / 10, (max_ns_t - data[0].counter) % 10 );
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:667:18: note: 'max_ns_t' was declared here
+  667 |         uint32_t max_ns_t, max_b_t;
+      |                  ^~~~~~~~
+../Core/Src/main.c: In function 'find_max2':
+../Core/Src/main.c:806:9: warning: 'max_ns_t' may be used uninitialized [-Wmaybe-uninitialized]
+  806 |         printf(" Trig @ %lu, Max @ %lu, Peak at %d us\n", counter_first, max_ns_t, (max_ns_t -counter_first) / 10 );
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:704:18: note: 'max_ns_t' was declared here
+  704 |         uint32_t max_ns_t;
+      |                  ^~~~~~~~
+../Core/Src/main.c:805:9: warning: 'max_ns_adc' may be used uninitialized [-Wmaybe-uninitialized]
+  805 |         printf(" Max ADC = %d, Voltage = %2.4f\n", max_ns_adc,max_ns_v);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:709:17: note: 'max_ns_adc' was declared here
+  709 |         int16_t max_ns_adc;
+      |                 ^~~~~~~~~~
+arm-none-eabi-gcc -o "m_field_stm32.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="m_field_stm32.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: m_field_stm32.elf
+ 
+arm-none-eabi-size  m_field_stm32.elf 
+arm-none-eabi-objdump -h -S m_field_stm32.elf  > "m_field_stm32.list"
+   text	   data	    bss	    dec	    hex	filename
+  24208	    468	   6340	  31016	   7928	m_field_stm32.elf
+Finished building: default.size.stdout
+ 
+Finished building: m_field_stm32.list
+ 
+00:28:34 **** Incremental Build of configuration Debug for project m_field_stm32 ****
+make -j8 all 
+arm-none-eabi-size  m_field_stm32.elf 
+   text	   data	    bss	    dec	    hex	filename
+  24208	    468	   6340	  31016	   7928	m_field_stm32.elf
+Finished building: default.size.stdout
+ 
