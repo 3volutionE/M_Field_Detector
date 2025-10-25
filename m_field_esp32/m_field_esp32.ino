@@ -309,8 +309,12 @@ String build_mqtt_payload(){
 
 void publish_data(String mqtt_payload){
   //if() {
-    debug_serial->printf("Publish %d byte to Topic %s, with data = %s\n", strlen(mqtt_payload.c_str()), MQTT_PUB_TOPIC, mqtt_payload.c_str());
-    mqtt_client.publish(MQTT_PUB_TOPIC, mqtt_payload.c_str());
+    char mqtt_topic[100];
+
+    sprintf(mqtt_topic, "%s/%s/%s%03d", MQTT_TOPIC_PUB_NAME, MQTT_TOPIC_PUB_VER, MQTT_TOPIC_PUB_DEV_NAME,MQTT_TOPIC_PUB_DEV_ID);
+    
+    debug_serial->printf("Publish %d byte to Topic %s, with data = %s\n", strlen(mqtt_payload.c_str()), mqtt_topic, mqtt_payload.c_str());
+    mqtt_client.publish(mqtt_topic, mqtt_payload.c_str());
   //}
 }
 
@@ -331,14 +335,20 @@ int get_substr(const String str, const char delim, int start_pos, String *ret_st
 /*
   * This function calculate the voltage from ADC value string ("-512" ... "511"), and round to the defined decimal place (4)
 */
-float cal_voltage(int16_t adc){
-  //int16_t adc_int;
-  float f;
+float cal_voltage(int16_t adc_val){
+    
+  float voltage_adc;
+  float voltage_input;
   double multiplier = pow(10.0, VOLTAGE_OUTPUT_DECIMAL_PLACE);
   
-  f = round(VOLTAGE(adc) * multiplier) / multiplier;
-  debug_serial->printf("Calculate ADC val %d to voltage = %f\n", adc, f);
-  return f;
+  //f = round(VOLTAGE(adc) * multiplier) / multiplier;
+  debug_serial->printf("ADC = %d\n", adc_val);
+  voltage_adc = ((ADC_VREF_P - ADC_VREF_N) * (adc_val / 512.0)) + ADC_OFFSET;    
+  voltage_input = (voltage_adc - 1.0) / (ADC_R2 / (ADC_R1 + ADC_R2));
+  // Rounding
+  voltage_input= round(voltage_input * multiplier) / multiplier;  
+  debug_serial->printf("Calculate ADC val %d to voltage adc = %f, voltage input = %f\n", adc_val, voltage_adc, voltage_input);
+  return voltage_input;
 }
 
 // t_base in second, t_counter is the counter of timer, each count = TIME_COUNTER_PERIOD (0.1uS)
@@ -357,6 +367,7 @@ void calculate_data(){
   
   m_field_data.max_ns_v = cal_voltage(m_field_data.max_ns_adc);
   m_field_data.max_ns_t_sec = cal_time(m_field_data.t_base_sec, m_field_data.max_ns_c);
+
   //m_field_data.max_ns_t = Srting() 
   //sprintf(m_field_data.max_ns_t, "%d:%d:%f", m_field_data.t_hour, m_field_data.t_min, m_field_data.max_ns_t_sec);
 

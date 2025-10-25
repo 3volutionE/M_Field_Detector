@@ -22,10 +22,15 @@
 
  
 
+#define ADC_VREF_P			2.003
+#define ADC_VREF_N			0.994
+#define ADC_OFFSET			1.55
+#define ADC_R1          10000.0
+#define ADC_R2          4320.0
 
   
   // MQTT SECTION //
-  #define MQTT_SELECT 1
+  #define MQTT_SELECT 2
 
   #if MQTT_SELECT == 1
     #define MQTT_SERVER           "test.mosquitto.org"

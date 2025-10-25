@@ -209,6 +209,7 @@ int main(void)
 		//HAL_GPIO_WritePin(USER_LED_BLUE_GPIO_Port, USER_LED_BLUE_Pin, 0);
 		read_adc2();
 		find_max2();
+		send_data();
 	  }else if ((port_d & 0x0008) > 0){
 		printf("Trig-\n");
 		HAL_GPIO_WritePin(USER_LED_BLUE_GPIO_Port, USER_LED_BLUE_Pin, 1);
@@ -488,6 +489,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
   /* USER CODE END MX_GPIO_Init_2 */
@@ -495,7 +500,7 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 #define TB_MODE							TB_MODE_0
-#define MAX_BUF_SIZE					100
+#define MAX_BUF_SIZE					10000
 
 
 
@@ -508,10 +513,10 @@ typedef struct {
 } data_record_t;
 
 typedef struct {
-	int16_t max_adc_ns;
-	int16_t max_adc_ew;
-	uint32_t time_max_ns;
-	uint32_t time_max_ew;
+	int16_t max_ns_adc;
+	int16_t max_ew_adc;
+	uint32_t max_ns_t;
+	uint32_t max_ew_t;
 } max_sample_t;
 
 data_record_t data[SAMPLE_READ_MAX];
@@ -671,8 +676,8 @@ void find_max(){
 
 
 
-	max_sample.max_adc_ns = 423;
-	max_sample.max_adc_ew = -217;
+	//max_sample.max_adc_ns = 423;
+	//max_sample.max_adc_ew = -217;
 	//max_sample.time_max_ns = 615228;
 	//max_sample.time_max_ew = 7108862;
 	//max_sample.time_max_ns = 615228;
@@ -693,20 +698,28 @@ void find_max(){
 void send_data(){
 	char send_buf[MAX_BUF_SIZE];
 	uint8_t chksum = 0xa5;
-	sprintf(send_buf, "$STMFIELD,%d,%lu,%d,%lu*%02X\r\n", max_sample.max_adc_ns,max_sample.time_max_ns, max_sample.max_adc_ew, max_sample.time_max_ew, chksum);
+	sprintf(send_buf, "$STMFIELD,%d,%lu,%d,%lu*%02X\r\n", max_sample.max_ns_adc,max_sample.max_ns_t, max_sample.max_ew_adc, max_sample.max_ew_t, chksum);
 	printf("%s",send_buf);
 	HAL_UART_Transmit(esp_uart, (uint8_t*)send_buf, strlen(send_buf), HAL_MAX_DELAY);
 }
 
 
+
+#define ADC_VREF_P			2.003
+#define ADC_VREF_N			0.994
+#define ADC_OFFSET			1.55
+
 void find_max2(){
 	float max_ns_v;
+	float ns_v;
 	uint32_t max_ns_t;
 
 	int count;
 	uint16_t adc_data_a, adc_data_b;
 	int16_t adc_value_a, adc_value_b;
+
 	int16_t max_ns_adc;
+
 	uint32_t counter;
 	sample_t *p_sample;
 
@@ -723,8 +736,10 @@ void find_max2(){
 
 	count = 0;
 	curr = head;
-	max_ns_v = 0;
 
+	max_ns_v = 0;
+	max_ns_adc = 0;
+	max_sample.max_ns_adc = 0;
 	p_sample = sample;
 
 	do{
@@ -740,69 +755,63 @@ void find_max2(){
 
 
 
-	counter = 0;
-	// CT23-CT20 (4 bits)
-	temp1 = p_sample->data_port_g; 	// CT23-PG2, CT22-PG3, CT21-PG4, CT20-PG5
-	//temp2 = ((temp1 & 0x0004) << 1) | ((temp1 & 0x0008) >> 1) | ((temp1 & 0x0010) >> 3) | ((temp1 & 0x0020) >> 5);
-	//counter = temp2 << 20;
-	counter |= (temp1 & 0x0004) << 21;
-	counter |= (temp1 & 0x0008) << 19;
-	counter |= (temp1 & 0x0010) << 17;
-	counter |= (temp1 & 0x0020) << 15;
+		counter = 0;
+		// CT23-CT20 (4 bits)
+		temp1 = p_sample->data_port_g; 	// CT23-PG2, CT22-PG3, CT21-PG4, CT20-PG5
+		//temp2 = ((temp1 & 0x0004) << 1) | ((temp1 & 0x0008) >> 1) | ((temp1 & 0x0010) >> 3) | ((temp1 & 0x0020) >> 5);
+		//counter = temp2 << 20;
+		counter |= (temp1 & 0x0004) << 21;
+		counter |= (temp1 & 0x0008) << 19;
+		counter |= (temp1 & 0x0010) << 17;
+		counter |= (temp1 & 0x0020) << 15;
 
 
-	// CT19-CT18 (2 bits)
-	temp1 = p_sample->data_port_b;	// CT19-PB11, CT18-PB10
-	temp2 = (temp1 >> 10) & 0x0003;
-	counter |= (temp2 << 18);
+		// CT19-CT18 (2 bits)
+		temp1 = p_sample->data_port_b;	// CT19-PB11, CT18-PB10
+		temp2 = (temp1 >> 10) & 0x0003;
+		counter |= (temp2 << 18);
 
-	// CT17-CT9 (9 bits)
-	temp1 = p_sample->data_port_e;	// CT17-PE15 ... CT9-PB7
-	temp2 = (temp1 >> 7) & 0x01ff;
-	counter |= (temp2 << 9);
+		// CT17-CT9 (9 bits)
+		temp1 = p_sample->data_port_e;	// CT17-PE15 ... CT9-PB7
+		temp2 = (temp1 >> 7) & 0x01ff;
+		counter |= (temp2 << 9);
 
-	// CT8-CT7 (2 bits)
-	temp1 = p_sample->data_port_g;	// CT8-PG1, CT7-PG0
-	temp2 = temp1 & 0x0003;
-	counter |= (temp2 << 7);
+		// CT8-CT7 (2 bits)
+		temp1 = p_sample->data_port_g;	// CT8-PG1, CT7-PG0
+		temp2 = temp1 & 0x0003;
+		counter |= (temp2 << 7);
 
-	// CT6-CT2 (5 bits)
-	temp1 = p_sample->data_port_f;	// CT6-PF15 ... CT2-PF11
-	temp2 = (temp1 >> 11) & 0x001f;
-	counter |= (temp2 << 2);
+		// CT6-CT2 (5 bits)
+		temp1 = p_sample->data_port_f;	// CT6-PF15 ... CT2-PF11
+		temp2 = (temp1 >> 11) & 0x001f;
+		counter |= (temp2 << 2);
 
-	// CT1-CT0 (2 bits)
-	temp1 = p_sample->data_port_b;	// CT1-PB2, CT0-PB1
-	temp2 = (temp1 >> 1) & 0x0003;
-	counter |= temp2;
+		// CT1-CT0 (2 bits)
+		temp1 = p_sample->data_port_b;	// CT1-PB2, CT0-PB1
+		temp2 = (temp1 >> 1) & 0x0003;
+		counter |= temp2;
 
-	adc_value_a = convert_number(adc_data_a);
-	adc_value_b = convert_number(adc_data_b);
+		adc_value_a = convert_number(adc_data_a);
+		adc_value_b = convert_number(adc_data_b);
 
 
-	if (count == 0) counter_first = counter;
-	if (count == SAMPLE_READ_MAX - 1) counter_last = counter;
+		if (count == 0) counter_first = counter;
+		if (count == SAMPLE_READ_MAX - 1) counter_last = counter;
 
-	//data[count].ns_adc = adc_value_a;
-	//data[count].ew_adc = adc_value_b;
-	//data[count].counter = counter;
-	//count++;
-		if (((adc_value_a / 512.0 * 0.5) + 1.50) > max_ns_v) {
-			max_ns_v = ((adc_value_a / 512.0 * 0.5) + 1.50);
-			max_ns_t = counter;
-			max_ns_adc = adc_value_a;
-			//printf("Max at %d\n",count);
+		if(adc_value_a > max_sample.max_ns_adc){
+			max_sample.max_ns_adc = adc_value_a;
+			max_sample.max_ns_t = counter;
+			max_ns_v = ((ADC_VREF_P - ADC_VREF_N) * adc_value_a / 512) + ADC_OFFSET;
 		}
 
-	//} while(++curr < tail);
-	p_sample++;
+		p_sample++;
 	} while(++count < SAMPLE_READ_MAX);
 
 	clear_buffer();
 
 	//printf("Test printf\n");
 	printf("----------------------------------------------------\n");
-	printf(" Max ADC = %d, Voltage = %2.4f\n", max_ns_adc,max_ns_v);
+	printf(" Max ADC = %d, Voltage = %2.4f\n", max_sample.max_ns_adc,max_ns_v);
 	printf(" Trig @ %lu, Max @ %lu, Peak at %d us\n", counter_first, max_ns_t, (max_ns_t -counter_first) / 10 );
 	printf("----------------------------------------------------\n");
 	//printf("find max fn : Max ADC NS = %d, %2.4f @ timer counter %lu, %d.%d\n", max_ns_adc, max_ns_v, max_ns_t, (max_ns_t -counter_first) / 10,(max_ns_t -counter_first) % 10);
@@ -822,14 +831,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	//	printf("Trigger - detected\n");
 	//	read_adc();
 	//} else if(GPIO_Pin == GPIO_USER_SW_Pin){
+	if(GPIO_Pin == GPIO_USER_SW_Pin){
 		//printf("User switch pressed\n");
 		//read_adc();
 	//	find_max2();
+		read_adc2();
+		find_max2();
 		//send_data();
 	//	trigger = 1;
-	//} else {
-    //  __NOP();
-  //}
+
+	} else {
+      __NOP();
+	}
 }
 
 

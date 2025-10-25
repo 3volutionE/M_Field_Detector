@@ -1,6 +1,39 @@
-00:28:17 **** Incremental Build of configuration Debug for project m_field_stm32 ****
+00:07:20 **** Incremental Build of configuration Debug for project m_field_stm32 ****
 make -j8 all 
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.o"
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.o"
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.o"
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_exti.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_exti.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_exti.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_exti.o"
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.o"
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.o"
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.o"
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.o"
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc.o"
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.o"
+arm-none-eabi-gcc "../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart_ex.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart_ex.d" -MT"Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart_ex.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart_ex.o"
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/stm32f7xx_hal_msp.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32f7xx_hal_msp.d" -MT"Core/Src/stm32f7xx_hal_msp.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32f7xx_hal_msp.o"
+arm-none-eabi-gcc "../Core/Src/stm32f7xx_it.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32f7xx_it.d" -MT"Core/Src/stm32f7xx_it.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32f7xx_it.o"
+arm-none-eabi-gcc "../Core/Src/syscalls.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/syscalls.d" -MT"Core/Src/syscalls.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/syscalls.o"
+arm-none-eabi-gcc "../Core/Src/sysmem.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/sysmem.d" -MT"Core/Src/sysmem.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/sysmem.o"
+arm-none-eabi-gcc "../Core/Src/system_stm32f7xx.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -Og -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/system_stm32f7xx.d" -MT"Core/Src/system_stm32f7xx.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/system_stm32f7xx.o"
+../Core/Src/stm32f7xx_it.c: In function 'MemManage_Handler':
+../Core/Src/stm32f7xx_it.c:107:9: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  107 |         printf("Error\n");
+      |         ^~~~~~
+../Core/Src/stm32f7xx_it.c:23:1: note: include '<stdio.h>' or provide a declaration of 'printf'
+   22 | #include "stm32f7xx_it.h"
+  +++ |+#include <stdio.h>
+   23 | /* Private includes ----------------------------------------------------------*/
+../Core/Src/stm32f7xx_it.c:107:9: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  107 |         printf("Error\n");
+      |         ^~~~~~
+../Core/Src/stm32f7xx_it.c:107:9: note: include '<stdio.h>' or provide a declaration of 'printf'
 ../Core/Src/main.c: In function 'main':
 ../Core/Src/main.c:167:37: warning: format '%X' expects argument of type 'unsigned int', but argument 2 has type 'sample_t *' [-Wformat=]
   167 |   printf("Sample address start = 0x%X end = 0x%x\n", sample, &(sample[SAMPLE_READ_MAX-1]));
@@ -27,129 +60,139 @@ arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -D
   210 |                 read_adc2();
       |                 ^~~~~~~~~
       |                 read_adc
+../Core/Src/main.c:212:17: warning: implicit declaration of function 'send_data' [-Wimplicit-function-declaration]
+  212 |                 send_data();
+      |                 ^~~~~~~~~
 ../Core/Src/main.c:131:20: warning: unused variable 'str' [-Wunused-variable]
   131 |         const char str[100] = "Hello from STM32\n";
       |                    ^~~
 ../Core/Src/main.c: At top level:
-../Core/Src/main.c:545:13: warning: conflicting types for 'read_adc2'; have 'void()'
-  545 | inline void read_adc2(){
+../Core/Src/main.c:550:13: warning: conflicting types for 'read_adc2'; have 'void()'
+  550 | inline void read_adc2(){
       |             ^~~~~~~~~
 ../Core/Src/main.c:210:17: note: previous implicit declaration of 'read_adc2' with type 'void()'
   210 |                 read_adc2();
       |                 ^~~~~~~~~
 ../Core/Src/main.c: In function 'read_adc2':
-../Core/Src/main.c:555:33: warning: unused variable 'counter_last' [-Wunused-variable]
-  555 |         uint32_t counter_first, counter_last;
+../Core/Src/main.c:560:33: warning: unused variable 'counter_last' [-Wunused-variable]
+  560 |         uint32_t counter_first, counter_last;
       |                                 ^~~~~~~~~~~~
-../Core/Src/main.c:555:18: warning: unused variable 'counter_first' [-Wunused-variable]
-  555 |         uint32_t counter_first, counter_last;
+../Core/Src/main.c:560:18: warning: unused variable 'counter_first' [-Wunused-variable]
+  560 |         uint32_t counter_first, counter_last;
       |                  ^~~~~~~~~~~~~
-../Core/Src/main.c:550:18: warning: unused variable 'counter' [-Wunused-variable]
-  550 |         uint32_t counter;
+../Core/Src/main.c:555:18: warning: unused variable 'counter' [-Wunused-variable]
+  555 |         uint32_t counter;
       |                  ^~~~~~~
-../Core/Src/main.c:549:30: warning: unused variable 'adc_value_b' [-Wunused-variable]
-  549 |         int16_t adc_value_a, adc_value_b;
+../Core/Src/main.c:554:30: warning: unused variable 'adc_value_b' [-Wunused-variable]
+  554 |         int16_t adc_value_a, adc_value_b;
       |                              ^~~~~~~~~~~
-../Core/Src/main.c:549:17: warning: unused variable 'adc_value_a' [-Wunused-variable]
-  549 |         int16_t adc_value_a, adc_value_b;
+../Core/Src/main.c:554:17: warning: unused variable 'adc_value_a' [-Wunused-variable]
+  554 |         int16_t adc_value_a, adc_value_b;
       |                 ^~~~~~~~~~~
-../Core/Src/main.c:548:30: warning: unused variable 'adc_data_b' [-Wunused-variable]
-  548 |         uint16_t adc_data_a, adc_data_b;
+../Core/Src/main.c:553:30: warning: unused variable 'adc_data_b' [-Wunused-variable]
+  553 |         uint16_t adc_data_a, adc_data_b;
       |                              ^~~~~~~~~~
-../Core/Src/main.c:548:18: warning: unused variable 'adc_data_a' [-Wunused-variable]
-  548 |         uint16_t adc_data_a, adc_data_b;
+../Core/Src/main.c:553:18: warning: unused variable 'adc_data_a' [-Wunused-variable]
+  553 |         uint16_t adc_data_a, adc_data_b;
       |                  ^~~~~~~~~~
 ../Core/Src/main.c: In function 'read_adc':
-../Core/Src/main.c:661:40: warning: format '%d' expects argument of type 'int', but argument 2 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
-  661 |         printf ("Sample read period = %d cycles\n", counter_last - counter_first);
+../Core/Src/main.c:666:40: warning: format '%d' expects argument of type 'int', but argument 2 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+  666 |         printf ("Sample read period = %d cycles\n", counter_last - counter_first);
       |                                       ~^            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       |                                        |                         |
       |                                        int                       uint32_t {aka long unsigned int}
       |                                       %ld
 ../Core/Src/main.c: In function 'find_max':
-../Core/Src/main.c:690:82: warning: format '%d' expects argument of type 'int', but argument 5 has type 'long unsigned int' [-Wformat=]
-  690 |         printf("Max NS ADC = %d Voltage %2.4f at counter %lu, time after trig = %d.%d us\n", max_ns_adc, (max_ns_adc / 512.0) + 1.5, max_ns_t, (max_ns_t - data[0].counter) / 10, (max_ns_t - data[0].counter) % 10 );
+../Core/Src/main.c:695:82: warning: format '%d' expects argument of type 'int', but argument 5 has type 'long unsigned int' [-Wformat=]
+  695 |         printf("Max NS ADC = %d Voltage %2.4f at counter %lu, time after trig = %d.%d us\n", max_ns_adc, (max_ns_adc / 512.0) + 1.5, max_ns_t, (max_ns_t - data[0].counter) / 10, (max_ns_t - data[0].counter) % 10 );
       |                                                                                 ~^                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       |                                                                                  |                                                                                          |
       |                                                                                  int                                                                                        long unsigned int
       |                                                                                 %ld
-../Core/Src/main.c:690:85: warning: format '%d' expects argument of type 'int', but argument 6 has type 'long unsigned int' [-Wformat=]
-  690 |         printf("Max NS ADC = %d Voltage %2.4f at counter %lu, time after trig = %d.%d us\n", max_ns_adc, (max_ns_adc / 512.0) + 1.5, max_ns_t, (max_ns_t - data[0].counter) / 10, (max_ns_t - data[0].counter) % 10 );
+../Core/Src/main.c:695:85: warning: format '%d' expects argument of type 'int', but argument 6 has type 'long unsigned int' [-Wformat=]
+  695 |         printf("Max NS ADC = %d Voltage %2.4f at counter %lu, time after trig = %d.%d us\n", max_ns_adc, (max_ns_adc / 512.0) + 1.5, max_ns_t, (max_ns_t - data[0].counter) / 10, (max_ns_t - data[0].counter) % 10 );
       |                                                                                    ~^                                                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       |                                                                                     |                                                                                                                          |
       |                                                                                     int                                                                                                                        long unsigned int
       |                                                                                    %ld
-../Core/Src/main.c:667:28: warning: unused variable 'max_b_t' [-Wunused-variable]
-  667 |         uint32_t max_ns_t, max_b_t;
+../Core/Src/main.c:672:28: warning: unused variable 'max_b_t' [-Wunused-variable]
+  672 |         uint32_t max_ns_t, max_b_t;
       |                            ^~~~~~~
-../Core/Src/main.c:666:29: warning: unused variable 'max_b_adc' [-Wunused-variable]
-  666 |         int16_t max_ns_adc, max_b_adc;
+../Core/Src/main.c:671:29: warning: unused variable 'max_b_adc' [-Wunused-variable]
+  671 |         int16_t max_ns_adc, max_b_adc;
       |                             ^~~~~~~~~
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:698:6: warning: conflicting types for 'send_data'; have 'void()'
+  698 | void send_data(){
+      |      ^~~~~~~~~
+../Core/Src/main.c:212:17: note: previous implicit declaration of 'send_data' with type 'void()'
+  212 |                 send_data();
+      |                 ^~~~~~~~~
 ../Core/Src/main.c: In function 'find_max2':
-../Core/Src/main.c:806:50: warning: format '%d' expects argument of type 'int', but argument 4 has type 'long unsigned int' [-Wformat=]
-  806 |         printf(" Trig @ %lu, Max @ %lu, Peak at %d us\n", counter_first, max_ns_t, (max_ns_t -counter_first) / 10 );
+../Core/Src/main.c:815:50: warning: format '%d' expects argument of type 'int', but argument 4 has type 'long unsigned int' [-Wformat=]
+  815 |         printf(" Trig @ %lu, Max @ %lu, Peak at %d us\n", counter_first, max_ns_t, (max_ns_t -counter_first) / 10 );
       |                                                 ~^                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       |                                                  |                                                           |
       |                                                  int                                                         long unsigned int
       |                                                 %ld
-../Core/Src/main.c:715:33: warning: variable 'counter_last' set but not used [-Wunused-but-set-variable]
-  715 |         uint32_t counter_first, counter_last;
+../Core/Src/main.c:728:33: warning: variable 'counter_last' set but not used [-Wunused-but-set-variable]
+  728 |         uint32_t counter_first, counter_last;
       |                                 ^~~~~~~~~~~~
-../Core/Src/main.c:708:30: warning: variable 'adc_value_b' set but not used [-Wunused-but-set-variable]
-  708 |         int16_t adc_value_a, adc_value_b;
+../Core/Src/main.c:721:17: warning: variable 'max_ns_adc' set but not used [-Wunused-but-set-variable]
+  721 |         int16_t max_ns_adc;
+      |                 ^~~~~~~~~~
+../Core/Src/main.c:719:30: warning: variable 'adc_value_b' set but not used [-Wunused-but-set-variable]
+  719 |         int16_t adc_value_a, adc_value_b;
       |                              ^~~~~~~~~~~
+../Core/Src/main.c:714:15: warning: unused variable 'ns_v' [-Wunused-variable]
+  714 |         float ns_v;
+      |               ^~~~
 ../Core/Src/main.c: At top level:
 ../Core/Src/main.c:77:13: warning: inline function 'get_sample' declared but never defined
    77 | inline void get_sample();
       |             ^~~~~~~~~~
+../Core/Src/main.c: In function 'find_max2':
+../Core/Src/main.c:815:94: warning: 'max_ns_t' is used uninitialized [-Wuninitialized]
+  815 |         printf(" Trig @ %lu, Max @ %lu, Peak at %d us\n", counter_first, max_ns_t, (max_ns_t -counter_first) / 10 );
+      |                                                                                    ~~~~~~~~~~^~~~~~~~~~~~~~~
+../Core/Src/main.c:715:18: note: 'max_ns_t' was declared here
+  715 |         uint32_t max_ns_t;
+      |                  ^~~~~~~~
 ../Core/Src/main.c: In function 'read_adc':
-../Core/Src/main.c:661:9: warning: 'counter_last' may be used uninitialized [-Wmaybe-uninitialized]
-  661 |         printf ("Sample read period = %d cycles\n", counter_last - counter_first);
+../Core/Src/main.c:666:9: warning: 'counter_last' may be used uninitialized [-Wmaybe-uninitialized]
+  666 |         printf ("Sample read period = %d cycles\n", counter_last - counter_first);
       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../Core/Src/main.c:580:33: note: 'counter_last' was declared here
-  580 |         uint32_t counter_first, counter_last;
+../Core/Src/main.c:585:33: note: 'counter_last' was declared here
+  585 |         uint32_t counter_first, counter_last;
       |                                 ^~~~~~~~~~~~
-../Core/Src/main.c:661:9: warning: 'counter_first' may be used uninitialized [-Wmaybe-uninitialized]
-  661 |         printf ("Sample read period = %d cycles\n", counter_last - counter_first);
+../Core/Src/main.c:666:9: warning: 'counter_first' may be used uninitialized [-Wmaybe-uninitialized]
+  666 |         printf ("Sample read period = %d cycles\n", counter_last - counter_first);
       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../Core/Src/main.c:580:18: note: 'counter_first' was declared here
-  580 |         uint32_t counter_first, counter_last;
+../Core/Src/main.c:585:18: note: 'counter_first' was declared here
+  585 |         uint32_t counter_first, counter_last;
       |                  ^~~~~~~~~~~~~
 ../Core/Src/main.c: In function 'find_max':
-../Core/Src/main.c:690:9: warning: 'max_ns_t' may be used uninitialized [-Wmaybe-uninitialized]
-  690 |         printf("Max NS ADC = %d Voltage %2.4f at counter %lu, time after trig = %d.%d us\n", max_ns_adc, (max_ns_adc / 512.0) + 1.5, max_ns_t, (max_ns_t - data[0].counter) / 10, (max_ns_t - data[0].counter) % 10 );
+../Core/Src/main.c:695:9: warning: 'max_ns_t' may be used uninitialized [-Wmaybe-uninitialized]
+  695 |         printf("Max NS ADC = %d Voltage %2.4f at counter %lu, time after trig = %d.%d us\n", max_ns_adc, (max_ns_adc / 512.0) + 1.5, max_ns_t, (max_ns_t - data[0].counter) / 10, (max_ns_t - data[0].counter) % 10 );
       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../Core/Src/main.c:667:18: note: 'max_ns_t' was declared here
-  667 |         uint32_t max_ns_t, max_b_t;
+../Core/Src/main.c:672:18: note: 'max_ns_t' was declared here
+  672 |         uint32_t max_ns_t, max_b_t;
       |                  ^~~~~~~~
-../Core/Src/main.c: In function 'find_max2':
-../Core/Src/main.c:806:9: warning: 'max_ns_t' may be used uninitialized [-Wmaybe-uninitialized]
-  806 |         printf(" Trig @ %lu, Max @ %lu, Peak at %d us\n", counter_first, max_ns_t, (max_ns_t -counter_first) / 10 );
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../Core/Src/main.c:704:18: note: 'max_ns_t' was declared here
-  704 |         uint32_t max_ns_t;
-      |                  ^~~~~~~~
-../Core/Src/main.c:805:9: warning: 'max_ns_adc' may be used uninitialized [-Wmaybe-uninitialized]
-  805 |         printf(" Max ADC = %d, Voltage = %2.4f\n", max_ns_adc,max_ns_v);
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../Core/Src/main.c:709:17: note: 'max_ns_adc' was declared here
-  709 |         int16_t max_ns_adc;
-      |                 ^~~~~~~~~~
 arm-none-eabi-gcc -o "m_field_stm32.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Projects\Kumwell\M_Field_Detector\stm32_ws\m_field_stm32\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="m_field_stm32.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: m_field_stm32.elf
  
 arm-none-eabi-size  m_field_stm32.elf 
 arm-none-eabi-objdump -h -S m_field_stm32.elf  > "m_field_stm32.list"
    text	   data	    bss	    dec	    hex	filename
-  24208	    468	   6340	  31016	   7928	m_field_stm32.elf
+  25368	    468	   6348	  32184	   7db8	m_field_stm32.elf
 Finished building: default.size.stdout
  
 Finished building: m_field_stm32.list
  
-00:28:34 **** Incremental Build of configuration Debug for project m_field_stm32 ****
+00:07:30 **** Incremental Build of configuration Debug for project m_field_stm32 ****
 make -j8 all 
 arm-none-eabi-size  m_field_stm32.elf 
    text	   data	    bss	    dec	    hex	filename
-  24208	    468	   6340	  31016	   7928	m_field_stm32.elf
+  25368	    468	   6348	  32184	   7db8	m_field_stm32.elf
 Finished building: default.size.stdout
  
