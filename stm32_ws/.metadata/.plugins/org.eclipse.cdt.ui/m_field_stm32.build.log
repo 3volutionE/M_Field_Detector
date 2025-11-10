@@ -1,10 +1,10 @@
-00:07:30 **** Incremental Build of configuration Debug for project m_field_stm32 ****
+02:11:54 **** Incremental Build of configuration Debug for project m_field_stm32 ****
 make -j8 all 
 arm-none-eabi-size  m_field_stm32.elf 
    text	   data	    bss	    dec	    hex	filename
-  25368	    468	   6348	  32184	   7db8	m_field_stm32.elf
+  26648	    468	   4772	  31888	   7c90	m_field_stm32.elf
 Finished building: default.size.stdout
  
 
-00:07:30 Build Finished. 0 errors, 0 warnings. (took 311ms)
+02:11:54 Build Finished. 0 errors, 0 warnings. (took 665ms)
 

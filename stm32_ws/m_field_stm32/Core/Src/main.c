@@ -34,12 +34,41 @@ typedef struct {
 	uint16_t data_port_g;
 } sample_t;
 
+typedef struct {
+	int16_t ns_adc;
+	int16_t ew_adc;
+	uint32_t ns_t;
+	uint32_t ew_t;
+	uint32_t counter;
+} data_record_t;
+
+typedef struct {
+	int16_t max_ns_adc;
+	int16_t max_ew_adc;
+	uint32_t max_ns_t;
+	uint32_t max_ew_t;
+	float max_ns_inp;
+	float max_ew_inp;
+} max_sample_t;
+
+typedef struct {
+	int16_t min_ns_adc;
+	int16_t min_ew_adc;
+	uint32_t min_ns_t;
+	uint32_t min_ew_t;
+} min_sample_t;
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SAMPLE_READ_MAX					500
-
+#define SAMPLE_READ_MAX					300
+#define ADC_VREF_P						2.003
+#define ADC_VREF_N						0.994
+#define ADC_OFFSET						1.55
+#define ADC_R1         				 	10000.0
+#define ADC_R2          				4320.0
+#define DELAY_SEC						3
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -49,6 +78,8 @@ typedef struct {
 
 /* Private variables ---------------------------------------------------------*/
 
+IWDG_HandleTypeDef hiwdg;
+
 UART_HandleTypeDef huart4;
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
@@ -57,13 +88,7 @@ UART_HandleTypeDef huart2;
 UART_HandleTypeDef *esp_uart;
 UART_HandleTypeDef *debug_uart;
 
-
 sample_t sample[SAMPLE_READ_MAX];
-
-sample_t *head, *curr, *tail;
-
-int trigger = 0;
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -73,50 +98,28 @@ static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_UART4_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_IWDG_Init(void);
 /* USER CODE BEGIN PFP */
-inline void get_sample();
-void find_max2();
+void find_max();
+void find_min();
 void read_adc();
+void send_data();
+void clear_buffer();
+void gps_uart_send_cmd(char *cmd);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-/* Send command to GNSS module function
- * the cmd is exclude start symbol ($) and end symbol (*)
- * this function will put '$' and '*XX<CR><LF>' and send over the uart interface
- */
-void gps_uart_send_cmd(char *cmd){
-	char chksum = 0;
-	char *pcmd = cmd;
+void delay_sec(int sec){
+	int count_500ms = 0;
 	do{
-		chksum ^= (*pcmd);
-		pcmd++;
-	}while(*pcmd != '\0');
-	printf ("Chksum = 0x%02X\n",chksum);
+		if (HAL_IWDG_Refresh(&hiwdg) != HAL_OK){
+			Error_Handler();
+		}
+		HAL_Delay(500);
+		count_500ms++;
+	}while(count_500ms < (sec<<1));
 }
-
-inline void next(){
-
-}
-
-void clear_buffer(){
-	//curr = head;
-	sample_t *p_sample;
-	int count = 0;
-
-	p_sample = sample;
-	count = 0;
-	do{
-		p_sample->data_port_b = 0;
-		p_sample->data_port_e = 0;
-		p_sample->data_port_f = 0;
-		p_sample->data_port_g = 0;
-	//}while(++curr < tail);
-	p_sample++;
-	}while(++count < SAMPLE_READ_MAX);
-}
-
 /* USER CODE END 0 */
 
 /**
@@ -127,8 +130,6 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
-	const char str[100] = "Hello from STM32\n";
   /* USER CODE END 1 */
 
   /* MPU Configuration--------------------------------------------------------*/
@@ -157,26 +158,27 @@ int main(void)
   MX_USART1_UART_Init();
   MX_UART4_Init();
   MX_USART2_UART_Init();
+  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
-  // Set sample buffer pointer
-  head = sample;
-  tail = sample + SAMPLE_READ_MAX - 1;
 
+  // Temp for debug
+  DBGMCU->APB1FZ |= DBGMCU_APB1_FZ_DBG_IWDG_STOP;
+
+  // Check last reset cause
+  printf("Last reset cause : ");
+  if (__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST)){
+	  printf("IWDG timer");
+  }else if(__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST)){
+	  printf("Reset Pin");
+  }else{
+	  printf("Other reason");
+  }
+  printf("\n");
+  __HAL_RCC_CLEAR_RESET_FLAGS();
 
   printf("Setup :\n");
-  printf("Sample address start = 0x%X end = 0x%x\n", sample, &(sample[SAMPLE_READ_MAX-1]));
-  printf("head = 0x%X tail = 0x%x\n", head, tail);
 
   // Empty all data in sample buffer
-  curr = head;
-  /*do{
-	curr->data_port_b = 0;
-	curr->data_port_e = 0;
-	curr->data_port_f = 0;
-	curr->data_port_g = 0;
-  }while(++curr < tail);
-  */
-
   clear_buffer();
 
   printf("Main program started\n");
@@ -185,11 +187,9 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  curr = head;
-  trigger = 0;
   while (1)
   {
-	  uint16_t port_d;
+	uint16_t port_d;
 	//if(trigger){
 	//	trigger = 0;
 	//	find_max2();
@@ -197,45 +197,28 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	// Reset Watchdog timer
+	if (HAL_IWDG_Refresh(&hiwdg) != HAL_OK){
+		Error_Handler();
+	}
 
-	while(1){
-	  port_d = GPIOD->IDR;
-	  //printf("PORT D = 0x%X\n",port_d);
-	  if((port_d & 0x0002) > 0){
+	port_d = GPIOD->IDR;
+	//printf("PORT D = 0x%X\n",port_d);
+	if((port_d & 0x0002) > 0){
 		// TRIG +
 		//printf("Trig+\n");
-		//HAL_GPIO_WritePin(USER_LED_BLUE_GPIO_Port, USER_LED_BLUE_Pin, 1);
-		//HAL_Delay(500);
-		//HAL_GPIO_WritePin(USER_LED_BLUE_GPIO_Port, USER_LED_BLUE_Pin, 0);
-		read_adc2();
-		find_max2();
+		read_adc();
+		find_max();
 		send_data();
-	  }else if ((port_d & 0x0008) > 0){
-		printf("Trig-\n");
-		HAL_GPIO_WritePin(USER_LED_BLUE_GPIO_Port, USER_LED_BLUE_Pin, 1);
-		HAL_Delay(500);
-		HAL_GPIO_WritePin(USER_LED_BLUE_GPIO_Port, USER_LED_BLUE_Pin, 0);
-	  }
-	}
-	//HAL_Delay(1000);
-	//HAL_GPIO_TogglePin(USER_LED_GREEN_GPIO_Port, USER_LED_GREEN_Pin);
-	//HAL_UART_Transmit(esp_uart, (uint8_t*)str, strlen(str), HAL_MAX_DELAY);
-	//HAL_GPIO_TogglePin(USER_LED_BLUE_GPIO_Port, USER_LED_BLUE_Pin);
-
-	// curr pointer will point to the last sample. to fill in the new sample, must move to the next slot first
-
-	curr->data_port_b = GPIOB->IDR;
-	curr->data_port_e = GPIOE->IDR;
-	curr->data_port_f = GPIOF->IDR;
-	curr->data_port_g = GPIOG->IDR;
-
-	if(curr == tail){
-	  curr = head;
-	}else{
-	  curr++;
+		delay_sec(DELAY_SEC);
+	}else if ((port_d & 0x0008) > 0){
+		read_adc();
+		find_min();
+		//send_data_min();
+		delay_sec(DELAY_SEC);
 	}
 
-	//HAL_Delay(1);
+	//DELAY(SSSSS)
   }
   /* USER CODE END 3 */
 }
@@ -257,8 +240,9 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 4;
@@ -290,6 +274,35 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief IWDG Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_IWDG_Init(void)
+{
+
+  /* USER CODE BEGIN IWDG_Init 0 */
+
+  /* USER CODE END IWDG_Init 0 */
+
+  /* USER CODE BEGIN IWDG_Init 1 */
+
+  /* USER CODE END IWDG_Init 1 */
+  hiwdg.Instance = IWDG;
+  hiwdg.Init.Prescaler = IWDG_PRESCALER_64;
+  hiwdg.Init.Window = 4000;
+  hiwdg.Init.Reload = 4000;
+  if (HAL_IWDG_Init(&hiwdg) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN IWDG_Init 2 */
+
+  /* USER CODE END IWDG_Init 2 */
+
 }
 
 /**
@@ -500,27 +513,14 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 #define TB_MODE							TB_MODE_0
-#define MAX_BUF_SIZE					10000
+#define MAX_BUF_SIZE					300
 
 
 
-typedef struct {
-	int16_t ns_adc;
-	int16_t ew_adc;
-	uint32_t ns_t;
-	uint32_t ew_t;
-	uint32_t counter;
-} data_record_t;
-
-typedef struct {
-	int16_t max_ns_adc;
-	int16_t max_ew_adc;
-	uint32_t max_ns_t;
-	uint32_t max_ew_t;
-} max_sample_t;
 
 data_record_t data[SAMPLE_READ_MAX];
 max_sample_t max_sample;
+min_sample_t min_sample;
 
 
 
@@ -547,17 +547,17 @@ int16_t convert_number(uint16_t data){
 }
 
 
-inline void read_adc2(){
+inline void read_adc(){
 	// Read 300 samples
 	int count;
-	uint16_t adc_data_a, adc_data_b;
-	int16_t adc_value_a, adc_value_b;
-	uint32_t counter;
+	//uint16_t adc_data_a, adc_data_b;
+	//int16_t adc_value_a, adc_value_b;
+	//uint32_t counter;
 	sample_t *p_sample;
 
 
 	// temp
-	uint32_t counter_first, counter_last;
+	//uint32_t counter_first, counter_last;
 
 	// On LED to indicate adc read
 	count = 0;
@@ -571,129 +571,6 @@ inline void read_adc2(){
 	}while(++count < SAMPLE_READ_MAX);
 }
 
-
-void read_adc(){
-	// Read 300 samples
-	int count;
-	uint16_t adc_data_a, adc_data_b;
-	int16_t adc_value_a, adc_value_b;
-	uint32_t counter;
-	sample_t *p_sample;
-
-
-	// temp
-	uint32_t counter_first, counter_last;
-
-	// On LED to indicate adc read
-	count = 0;
-	p_sample = sample;
-	do{
-		p_sample->data_port_b = GPIOB->IDR;
-		p_sample->data_port_e = GPIOE->IDR;
-		p_sample->data_port_f = GPIOF->IDR;
-		p_sample->data_port_g = GPIOG->IDR;
-		p_sample++;
-	//}while(++count < SAMPLE_READ_MAX);
-	}while(++count < 300);
-
-
-
-	// Post Processing
-	count = 0;
-	p_sample = sample;
-	do{
-		uint16_t temp1, temp2;
-
-		adc_data_a = p_sample->data_port_f & 0x03ff;
-		//data[count].ns_adc = p_sample->data_port_f & 0x03ff;
-		adc_data_b = (p_sample->data_port_g >> 6) & 0x03ff;
-		//data[count].ew_adc = p_sample->data_port_f & 0x03ff;
-
-
-
-		counter = 0;
-		// CT23-CT20 (4 bits)
-		temp1 = p_sample->data_port_g; 	// CT23-PG2, CT22-PG3, CT21-PG4, CT20-PG5
-		//temp2 = ((temp1 & 0x0004) << 1) | ((temp1 & 0x0008) >> 1) | ((temp1 & 0x0010) >> 3) | ((temp1 & 0x0020) >> 5);
-		//counter = temp2 << 20;
-		counter |= (temp1 & 0x0004) << 21;
-		counter |= (temp1 & 0x0008) << 19;
-		counter |= (temp1 & 0x0010) << 17;
-		counter |= (temp1 & 0x0020) << 15;
-
-
-		// CT19-CT18 (2 bits)
-		temp1 = p_sample->data_port_b;	// CT19-PB11, CT18-PB10
-		temp2 = (temp1 >> 10) & 0x0003;
-		counter |= (temp2 << 18);
-
-		// CT17-CT9 (9 bits)
-		temp1 = p_sample->data_port_e;	// CT17-PE15 ... CT9-PB7
-		temp2 = (temp1 >> 7) & 0x01ff;
-		counter |= (temp2 << 9);
-
-		// CT8-CT7 (2 bits)
-		temp1 = p_sample->data_port_g;	// CT8-PG1, CT7-PG0
-		temp2 = temp1 & 0x0003;
-		counter |= (temp2 << 7);
-
-		// CT6-CT2 (5 bits)
-		temp1 = p_sample->data_port_f;	// CT6-PF15 ... CT2-PF11
-		temp2 = (temp1 >> 11) & 0x001f;
-		counter |= (temp2 << 2);
-
-		// CT1-CT0 (2 bits)
-		temp1 = p_sample->data_port_b;	// CT1-PB2, CT0-PB1
-		temp2 = (temp1 >> 1) & 0x0003;
-		counter |= temp2;
-
-		adc_value_a = convert_number(adc_data_a);
-		adc_value_b = convert_number(adc_data_b);
-
-
-		if (count == 0) counter_first = counter;
-		if (count == SAMPLE_READ_MAX - 1) counter_last = counter;
-
-		data[count].ns_adc = adc_value_a;
-		data[count].ew_adc = adc_value_b;
-		data[count].counter = counter;
-
-		//printf ("Sample %d\tPort A = 0x%04X (%d) %.4f V,\tPort B = 0x%04X (%d)\t Time = 0x%06X\n",count+1, adc_data_a, adc_value_a, ((adc_value_a / 512.0) + 1.5), adc_data_b, adc_value_b, counter);
-
-
-		p_sample++;
-	}while(++count < SAMPLE_READ_MAX);
-	printf ("Sample read period = %d cycles\n", counter_last - counter_first);
-}
-
-void find_max(){
-	int count;
-	int16_t max_ns_adc, max_b_adc;
-	uint32_t max_ns_t, max_b_t;
-
-
-
-
-
-
-	//max_sample.max_adc_ns = 423;
-	//max_sample.max_adc_ew = -217;
-	//max_sample.time_max_ns = 615228;
-	//max_sample.time_max_ew = 7108862;
-	//max_sample.time_max_ns = 615228;
-	//max_sample.time_max_ew = 7108862;
-	count = 0;
-
-	max_ns_adc = data[0].ns_adc;
-	do{
-		if (data[count].ns_adc > max_ns_adc){
-			max_ns_adc = data[count].ns_adc;
-			max_ns_t = data[count].counter;
-		}
-	}while(++count < SAMPLE_READ_MAX);
-
-	printf("Max NS ADC = %d Voltage %2.4f at counter %lu, time after trig = %d.%d us\n", max_ns_adc, (max_ns_adc / 512.0) + 1.5, max_ns_t, (max_ns_t - data[0].counter) / 10, (max_ns_t - data[0].counter) % 10 );
-}
 
 void send_data(){
 	char send_buf[MAX_BUF_SIZE];
@@ -705,119 +582,248 @@ void send_data(){
 
 
 
-#define ADC_VREF_P			2.003
-#define ADC_VREF_N			0.994
-#define ADC_OFFSET			1.55
 
-void find_max2(){
-	float max_ns_v;
-	float ns_v;
-	uint32_t max_ns_t;
-
+void find_max(){
+	float max_ns_v = 0.0, max_ew_v = 0.0;
 	int count;
 	uint16_t adc_data_a, adc_data_b;
 	int16_t adc_value_a, adc_value_b;
-
-	int16_t max_ns_adc;
-
-	uint32_t counter;
+	uint32_t counter = 0;
 	sample_t *p_sample;
+	uint32_t trigger_t;
+	uint16_t temp1, temp2;
 
-
-	// temp
-	uint32_t counter_first, counter_last;
-
-	// On LED to indicate adc read
-	//HAL_GPIO_WritePin(USER_LED_BLUE_GPIO_Port, USER_LED_BLUE_Pin, 1);
-
-
-
-
+	//uint32_t counter_first, counter_last;
 
 	count = 0;
-	curr = head;
-
-	max_ns_v = 0;
-	max_ns_adc = 0;
-	max_sample.max_ns_adc = 0;
 	p_sample = sample;
+	max_sample.max_ns_adc = 0;
+	max_sample.max_ew_adc = 0;
 
 	do{
-		uint16_t temp1, temp2;
 
-	//	adc_data_a = curr->data_port_f & 0x03ff;
-	//data[count].ns_adc = p_sample->data_port_f & 0x03ff;
-	//	adc_data_b = (curr->data_port_g >> 6) & 0x03ff;
-	//data[count].ew_adc = p_sample->data_port_f & 0x03ff;
 
+		// Read ADC
 		adc_data_a = p_sample->data_port_f & 0x03ff;
 		adc_data_b = (p_sample->data_port_g >> 6) & 0x03ff;
 
-
-
+		// Read Counter
 		counter = 0;
-		// CT23-CT20 (4 bits)
+		// -- CT23-CT20 (4 bits)
 		temp1 = p_sample->data_port_g; 	// CT23-PG2, CT22-PG3, CT21-PG4, CT20-PG5
 		//temp2 = ((temp1 & 0x0004) << 1) | ((temp1 & 0x0008) >> 1) | ((temp1 & 0x0010) >> 3) | ((temp1 & 0x0020) >> 5);
 		//counter = temp2 << 20;
-		counter |= (temp1 & 0x0004) << 21;
-		counter |= (temp1 & 0x0008) << 19;
-		counter |= (temp1 & 0x0010) << 17;
-		counter |= (temp1 & 0x0020) << 15;
+		counter |= ((temp1 & 0x0004) << 21);
+		counter |= ((temp1 & 0x0008) << 19);
+		counter |= ((temp1 & 0x0010) << 17);
+		counter |= ((temp1 & 0x0020) << 15);
 
-
-		// CT19-CT18 (2 bits)
+		// -- CT19-CT18 (2 bits)
 		temp1 = p_sample->data_port_b;	// CT19-PB11, CT18-PB10
 		temp2 = (temp1 >> 10) & 0x0003;
+		//temp2 = 0xffff;
 		counter |= (temp2 << 18);
 
-		// CT17-CT9 (9 bits)
+		// -- CT17-CT9 (9 bits)
 		temp1 = p_sample->data_port_e;	// CT17-PE15 ... CT9-PB7
 		temp2 = (temp1 >> 7) & 0x01ff;
 		counter |= (temp2 << 9);
 
-		// CT8-CT7 (2 bits)
+		// -- CT8-CT7 (2 bits)
 		temp1 = p_sample->data_port_g;	// CT8-PG1, CT7-PG0
 		temp2 = temp1 & 0x0003;
 		counter |= (temp2 << 7);
 
-		// CT6-CT2 (5 bits)
+		// -- CT6-CT2 (5 bits)
 		temp1 = p_sample->data_port_f;	// CT6-PF15 ... CT2-PF11
 		temp2 = (temp1 >> 11) & 0x001f;
 		counter |= (temp2 << 2);
 
-		// CT1-CT0 (2 bits)
+		// -- CT1-CT0 (2 bits)
 		temp1 = p_sample->data_port_b;	// CT1-PB2, CT0-PB1
 		temp2 = (temp1 >> 1) & 0x0003;
 		counter |= temp2;
 
+		// Convert the adc_data to adc_value
 		adc_value_a = convert_number(adc_data_a);
-		adc_value_b = convert_number(adc_data_b);
+		adc_value_b = -(convert_number(adc_data_b));			// *Invert to negative value due to the hardware bug
 
-
-		if (count == 0) counter_first = counter;
-		if (count == SAMPLE_READ_MAX - 1) counter_last = counter;
-
+		// Check if current max is max
 		if(adc_value_a > max_sample.max_ns_adc){
+			// Store new max adc_value and calculate adc_voltage
 			max_sample.max_ns_adc = adc_value_a;
 			max_sample.max_ns_t = counter;
 			max_ns_v = ((ADC_VREF_P - ADC_VREF_N) * adc_value_a / 512) + ADC_OFFSET;
 		}
 
+		if(adc_value_b > max_sample.max_ew_adc){
+			// Store new max adc_value and calculate adc_voltage
+			max_sample.max_ew_adc = adc_value_b;
+			max_sample.max_ew_t = counter;
+			max_ew_v = ((ADC_VREF_P - ADC_VREF_N) * adc_value_b / 512) + ADC_OFFSET;
+		}
+
 		p_sample++;
+		if (count == 0) trigger_t = counter;
 	} while(++count < SAMPLE_READ_MAX);
 
+	max_sample.max_ns_inp = (max_ns_v - 1.0) / (ADC_R2 / (ADC_R1 + ADC_R2));
+	max_sample.max_ew_inp = (max_ew_v - 1.0) / (ADC_R2 / (ADC_R1 + ADC_R2));
+
+	printf("----------------------------------------------------------------------------------------------\n");
+	printf("\tTrigger+\tBase counter = %lu\n",trigger_t);
+	printf("\tMax ADC\t\tMax Voltage\tInput\t\tCounter\t\tTime to Max\n");
+	printf("----------------------------------------------------------------------------------------------\n");
+	printf("N-S\t%d\t\t%2.4f\t\t%2.4f\t\t%lu\t\t%1.1f\n",max_sample.max_ns_adc, max_ns_v, max_sample.max_ns_inp, max_sample.max_ns_t, (max_sample.max_ns_t-trigger_t)/10.0);
+	printf("E-W\t%d\t\t%2.4f\t\t%2.4f\t\t%lu\t\t%1.1f\n",max_sample.max_ew_adc, max_ew_v, max_sample.max_ew_inp, max_sample.max_ew_t, (max_sample.max_ew_t-trigger_t)/10.0);
+	printf("----------------------------------------------------------------------------------------------\n");
+
+
+	///printf(" Max ADC = %d, Voltage = %2.4f\n", max_sample.max_ns_adc,max_ns_v);
+	//printf(" Trig @ %lu, Max @ %lu, Peak at %d us\n", counter_first, max_sample.max_ns_t, (max_sample.max_ns_t -counter_first) / 10 );
+	//printf(" Input = %2.4f V\n", (max_ns_v - 1.0) / (ADC_R2 / (ADC_R1 + ADC_R2)));
+	//printf("----------------------------------------------------\n");
+
+
 	clear_buffer();
-
-	//printf("Test printf\n");
-	printf("----------------------------------------------------\n");
-	printf(" Max ADC = %d, Voltage = %2.4f\n", max_sample.max_ns_adc,max_ns_v);
-	printf(" Trig @ %lu, Max @ %lu, Peak at %d us\n", counter_first, max_ns_t, (max_ns_t -counter_first) / 10 );
-	printf("----------------------------------------------------\n");
-	//printf("find max fn : Max ADC NS = %d, %2.4f @ timer counter %lu, %d.%d\n", max_ns_adc, max_ns_v, max_ns_t, (max_ns_t -counter_first) / 10,(max_ns_t -counter_first) % 10);
-
-	//(adc_data_a / 1024 * 7.2185) - 9.2229
 }
+
+
+
+void find_min(){
+	float min_ns_v = 0.0, min_ew_v = 0.0;
+	float min_ns_inp = 0.0, min_ew_inp = 0.0;
+	int count;
+	uint16_t adc_data_a, adc_data_b;
+	int16_t adc_value_a, adc_value_b;
+	uint32_t counter = 0;
+	sample_t *p_sample;
+
+	// temp
+	uint32_t trigger_t;
+
+	count = 0;
+	p_sample = sample;
+	min_sample.min_ns_adc = 0;
+	min_sample.min_ew_adc = 0;
+
+	do{
+		uint16_t temp1, temp2;
+
+		// Read ADC
+		adc_data_a = p_sample->data_port_f & 0x03ff;
+		adc_data_b = (p_sample->data_port_g >> 6) & 0x03ff;
+
+		// Read Counter
+		counter = 0;
+		// -- CT23-CT20 (4 bits)
+		temp1 = p_sample->data_port_g; 	// CT23-PG2, CT22-PG3, CT21-PG4, CT20-PG5
+		//temp2 = ((temp1 & 0x0004) << 1) | ((temp1 & 0x0008) >> 1) | ((temp1 & 0x0010) >> 3) | ((temp1 & 0x0020) >> 5);
+		//counter = temp2 << 20;
+		counter |= ((temp1 & 0x0004) << 21);
+		counter |= ((temp1 & 0x0008) << 19);
+		counter |= ((temp1 & 0x0010) << 17);
+		counter |= ((temp1 & 0x0020) << 15);
+
+		// -- CT19-CT18 (2 bits)
+		temp1 = p_sample->data_port_b;	// CT19-PB11, CT18-PB10
+		temp2 = (temp1 >> 10) & 0x0003;
+		counter |= (temp2 << 18);
+
+		// -- CT17-CT9 (9 bits)
+		temp1 = p_sample->data_port_e;	// CT17-PE15 ... CT9-PB7
+		temp2 = (temp1 >> 7) & 0x01ff;
+		counter |= (temp2 << 9);
+
+		// -- CT8-CT7 (2 bits)
+		temp1 = p_sample->data_port_g;	// CT8-PG1, CT7-PG0
+		temp2 = temp1 & 0x0003;
+		counter |= (temp2 << 7);
+
+		// -- CT6-CT2 (5 bits)
+		temp1 = p_sample->data_port_f;	// CT6-PF15 ... CT2-PF11
+		temp2 = (temp1 >> 11) & 0x001f;
+		counter |= (temp2 << 2);
+
+		// -- CT1-CT0 (2 bits)
+		temp1 = p_sample->data_port_b;	// CT1-PB2, CT0-PB1
+		temp2 = (temp1 >> 1) & 0x0003;
+		counter |= temp2;
+
+		// Convert the adc_data to adc_value
+		adc_value_a = convert_number(adc_data_a);
+		adc_value_b = convert_number(adc_data_b);
+
+		// Check if current max is max
+		if(adc_value_a < min_sample.min_ns_adc){
+			// Store new max adc_value and calculate adc_voltage
+			min_sample.min_ns_adc = adc_value_a;
+			min_sample.min_ns_t = counter;
+			//min_ns_v = ADC_OFFSET - ((ADC_VREF_P - ADC_VREF_N) * adc_value_a / 512);
+			min_ns_v = ((ADC_VREF_P - ADC_VREF_N) * adc_value_a / 512) + ADC_OFFSET;
+		}
+
+		if(adc_value_b < min_sample.min_ew_adc){
+			// Store new max adc_value and calculate adc_voltage
+			min_sample.min_ew_adc = adc_value_b;
+			min_sample.min_ew_t = counter;
+			min_ew_v = ADC_OFFSET - ((ADC_VREF_P - ADC_VREF_N) * adc_value_b / 512);
+		}
+
+		p_sample++;
+		if (count == 0) trigger_t = counter;
+	} while(++count < SAMPLE_READ_MAX);
+
+
+	printf("----------------------------------------------------------------------------------------------\n");
+	printf("\tTrigger-\tBase counter = %lu\n",trigger_t);
+	printf("\tMax ADC\t\tMax Voltage\tInput\t\tCounter\t\tTime to Min\n");
+	printf("----------------------------------------------------------------------------------------------\n");
+	printf("N-S\t%d\t\t%2.4f\t\t%2.4f\t\t%lu\t\t%1.1f\n",min_sample.min_ns_adc, min_ns_v, min_ns_inp, min_sample.min_ns_t, (min_sample.min_ns_t-trigger_t)/10.0);
+	printf("E-W\t%d\t\t%2.4f\t\t%2.4f\t\t%lu\t\t%1.1f\n",min_sample.min_ew_adc, min_ew_v, min_ew_inp, min_sample.min_ew_t, (min_sample.min_ew_t-trigger_t)/10.0);
+	printf("----------------------------------------------------------------------------------------------\n");
+
+	clear_buffer();
+/*
+	printf("----------------------------------------------------\n");
+	printf(" Min ADC = %d, Voltage = %2.4f\n", min_sample.min_ns_adc,min_ns_v);
+	printf(" Trig @ %lu, Max @ %lu, Peak at %d us\n", counter_first, min_sample.min_ns_t, (min_sample.min_ns_t -counter_first) / 10 );
+	printf(" Input = %2.4f V\n", (min_ns_v - 1.0) / (ADC_R2 / (ADC_R1 + ADC_R2)));
+	printf("----------------------------------------------------\n");
+*/
+
+
+}
+
+/* Send command to GNSS module function
+ * the cmd is exclude start symbol ($) and end symbol (*)
+ * this function will put '$' and '*XX<CR><LF>' and send over the uart interface
+ */
+void gps_uart_send_cmd(char *cmd){
+	char chksum = 0;
+	char *pcmd = cmd;
+	do{
+		chksum ^= (*pcmd);
+		pcmd++;
+	}while(*pcmd != '\0');
+	printf ("Chksum = 0x%02X\n",chksum);
+}
+
+void clear_buffer(){
+	sample_t *p_sample;
+	int count = 0;
+
+	p_sample = sample;
+	count = 0;
+	do{
+		p_sample->data_port_b = 0;
+		p_sample->data_port_e = 0;
+		p_sample->data_port_f = 0;
+		p_sample->data_port_g = 0;
+		p_sample++;
+	}while(++count < SAMPLE_READ_MAX);
+}
+
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
@@ -832,14 +838,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	//	read_adc();
 	//} else if(GPIO_Pin == GPIO_USER_SW_Pin){
 	if(GPIO_Pin == GPIO_USER_SW_Pin){
-		//printf("User switch pressed\n");
-		//read_adc();
-	//	find_max2();
-		read_adc2();
-		find_max2();
-		//send_data();
-	//	trigger = 1;
-
+		printf("User switch pressed\n");
+		while(1){
+			__NOP();
+		}
 	} else {
       __NOP();
 	}
