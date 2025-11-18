@@ -3,6 +3,13 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="false"/>
 	<list key="searchhistory">
+		<item value="max_sample"/>
+		<item value="max_ns_t"/>
+		<item value="find_max"/>
+		<item value="find_,max"/>
+		<item value="find_min"/>
+		<item value="sample"/>
+		<item value="SAMPLE_READ_MAX"/>
 		<item value="&amp;huart4"/>
 		<item value="hal_uart_tr"/>
 	</list>

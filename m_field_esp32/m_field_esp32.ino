@@ -23,6 +23,27 @@ typedef struct {
   uint32_t  max_ns_c = 22222222;
   uint32_t  max_ew_c = 8888888;
 
+
+  // NEW VERSION //
+  int16_t   ns_max_adc = 0;
+  int16_t   ns_min_adc = 0;
+  uint32_t  ns_max_c = 0;
+  uint32_t  ns_min_c = 0;
+
+  int16_t   ew_max_adc = 0;
+  int16_t   ew_min_adc = 0;
+  uint32_t  ew_max_c = 0;
+  uint32_t  ew_min_c = 0;
+
+  float     ns_max_v = 0.0;
+  float     ns_min_v = 0.0;
+  float     ew_max_v = 0.0;
+  float     ew_min_v = 0.0;
+
+  // END NEW
+
+
+
   // Time info
   //String    max_ns_t;
   double    max_ns_t_sec;
@@ -52,6 +73,9 @@ int gps_read();
 int stm_read();
 void calculate_data();
 
+int stm_read2();
+void calculate_data2();
+
 String build_mqtt_payload();
 void publish_data(String mqtt_payload);
 void send_data(DataRecord_t rec);
@@ -63,6 +87,7 @@ void callback(char* topic, byte* payload, unsigned int length);
 
 #ifdef DEBUG_FN_PRINT_DATA
   void print_data();
+  void print_data2();
 #endif
 
 
@@ -119,15 +144,15 @@ void loop() {
   if (stm_serial->available() != 0) {
     // Mark base time
     m_field_data.t_base_sec = m_field_data.t_sec;
-    if(stm_read()) {
+    if(stm_read2()) {
       // Interpret and calculate and send data
       calculate_data();
       String mqtt_payload = build_mqtt_payload();
-      debug_serial->write(mqtt_payload.c_str());
-      debug_serial->println("");
+      //debug_serial->write(mqtt_payload.c_str());
+      //debug_serial->println("");
 
-      publish_data(mqtt_payload);
-      print_data();
+      //publish_data(mqtt_payload);
+      print_data2();
     }
   }
 
@@ -241,6 +266,8 @@ int stm_read(){
   String max_ew_c;
   String chksum;
 
+
+
   byte_read = stm_serial->readBytes(stm_byte, STM_SENTENCE_MAX_LEN);
   stm_sentence = String(stm_byte);
 
@@ -258,6 +285,59 @@ int stm_read(){
   return ret_val;
 }
 
+
+
+int stm_read2(){
+  char stm_byte[STM_SENTENCE_MAX_LEN];
+  int byte_read;
+  int index = 0;
+  int ret_val = 1;
+
+  String stm_sentence;
+  String header;  
+  String ns_max_adc;
+  String ns_max_c;
+  String ns_min_adc;
+  String ns_min_c;
+  
+  String ew_max_adc;
+  String ew_max_c;
+  String ew_min_adc;
+  String ew_min_c;
+
+  String chksum;
+
+  
+
+  byte_read = stm_serial->readBytes(stm_byte, STM_SENTENCE_MAX_LEN);
+  stm_sentence = String(stm_byte);
+
+  index = get_substr(stm_sentence, ',', index, &header);        // Expect $STMFIELD
+  index = get_substr(stm_sentence, ',', index, &ns_max_adc);    // 
+  index = get_substr(stm_sentence, ',', index, &ns_max_c);      // 
+  index = get_substr(stm_sentence, ',', index, &ns_min_adc);    // 
+  index = get_substr(stm_sentence, ',', index, &ns_min_c);      // 
+
+  index = get_substr(stm_sentence, ',', index, &ew_max_adc);    // 
+  index = get_substr(stm_sentence, ',', index, &ew_max_c);      // 
+  index = get_substr(stm_sentence, ',', index, &ew_min_adc);    // 
+  index = get_substr(stm_sentence, ',', index, &ew_min_c);      // 
+  
+  index = get_substr(stm_sentence, '*', index, &chksum);    // 
+  
+  m_field_data.ns_max_adc = ns_max_adc.toInt();
+  m_field_data.ns_min_adc = ns_min_adc.toInt();
+
+  m_field_data.ew_max_adc = ew_max_adc.toInt();
+  m_field_data.ew_min_adc = ew_min_adc.toInt();
+  
+  m_field_data.ns_max_c = ns_max_c.toInt();  
+  m_field_data.ns_min_c = ns_min_c.toInt();  
+  m_field_data.ew_max_c = ew_max_c.toInt();
+  m_field_data.ew_min_c = ew_min_c.toInt();
+
+  return ret_val;
+}
 
 /*
   * Prepare the MQTT publish payload
@@ -376,7 +456,18 @@ void calculate_data(){
   //sprintf(m_field_data.max_ew_t, "%d:%d:%f", m_field_data.t_hour, m_field_data.t_min, m_field_data.max_ew_t_sec);
 }
 
+void calculate_data2(){
+  
+  m_field_data.max_ns_v = cal_voltage(m_field_data.max_ns_adc);
+  m_field_data.max_ns_t_sec = cal_time(m_field_data.t_base_sec, m_field_data.max_ns_c);
 
+  //m_field_data.max_ns_t = Srting() 
+  //sprintf(m_field_data.max_ns_t, "%d:%d:%f", m_field_data.t_hour, m_field_data.t_min, m_field_data.max_ns_t_sec);
+
+  m_field_data.max_ew_v = cal_voltage(m_field_data.max_ew_adc);
+  m_field_data.max_ew_t_sec = cal_time(m_field_data.t_base_sec, m_field_data.max_ew_c);
+  //sprintf(m_field_data.max_ew_t, "%d:%d:%f", m_field_data.t_hour, m_field_data.t_min, m_field_data.max_ew_t_sec);
+}
 // ====================================================================================================================
 
 
@@ -592,6 +683,25 @@ void callback(char* topic, byte* payload, unsigned int length){
    debug_serial->printf("Max EW T_SEC = %lf\n", d.max_ew_t_sec);
    debug_serial->printf("Hour = %d, Min = %d, Sec = %d\n", d.t_hour, d.t_min, d.t_sec);
    debug_serial->printf("Base sec = %d\n", d.t_base_sec);
+  }
+  void print_data2(){    
+    DataRecord_t rec = m_field_data;
+   
+    debug_serial->printf("\n");
+    debug_serial->printf("-------------------------------------------------------------------------------\n");
+    debug_serial->printf("\tMax ADC\t\tMax V\t\tMin ADC\t\tMin V\n");
+    debug_serial->printf("\tMax Cnt\t\tMax us\t\tMin Cnt\t\tMin us\n");
+    debug_serial->printf("-------------------------------------------------------------------------------\n");	
+    debug_serial->printf("N-S\t%d\t\t%lu\t\t%d\t\t%lu\n", rec.ns_max_adc, rec.ns_max_c, rec.ns_min_adc, rec.ns_min_c);
+    //debug_serial->printf("\t%lu\t\t%1.1f\t\t%lu\t\t%1.1f\n", rec.ns_max_t, (rec.ns_max_t-trigger_t)/10.0, rec.ns_min_t, (rec.ns_min_t-trigger_t)/10.0);
+    debug_serial->printf("\n");
+    debug_serial->printf("E-W\t%d\t\t%lu\t\t%d\t\t%lu\n", rec.ew_max_adc, rec.ew_max_c, rec.ew_min_adc, rec.ew_min_c);
+    //debug_serial->printf("\t%lu\t\t%1.1f\t\t%lu\t\t%1.1f\n", rec.ew_max_t, (rec.ew_max_t-trigger_t)/10.0, rec.ew_min_t, (rec.ew_min_t-trigger_t)/10.0);
+    debug_serial->printf("\n");
+    //debug_serial->printf("\tBase counter = %lu\n",trigger_t);
+
+
+
   }
 #endif
 

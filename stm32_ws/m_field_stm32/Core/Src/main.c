@@ -58,11 +58,25 @@ typedef struct {
 	uint32_t min_ew_t;
 } min_sample_t;
 
+typedef struct {
+	//uint8_t ns_rec_type;
+	int16_t ns_max_adc;
+	int16_t ns_min_adc;
+	int16_t ew_max_adc;
+	int16_t ew_min_adc;
+
+	uint32_t ns_max_t;
+	uint32_t ns_min_t;
+	uint32_t ew_max_t;
+	uint32_t ew_min_t;
+} record_t;
+
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SAMPLE_READ_MAX					300
+#define SAMPLE_READ_MAX					1000
 #define ADC_VREF_P						2.003
 #define ADC_VREF_N						0.994
 #define ADC_OFFSET						1.55
@@ -89,6 +103,7 @@ UART_HandleTypeDef *esp_uart;
 UART_HandleTypeDef *debug_uart;
 
 sample_t sample[SAMPLE_READ_MAX];
+record_t rec;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -102,6 +117,8 @@ static void MX_IWDG_Init(void);
 /* USER CODE BEGIN PFP */
 void find_max();
 void find_min();
+void find_max_min();
+void find_max_min2();
 void read_adc();
 void send_data();
 void clear_buffer();
@@ -187,6 +204,24 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  while(1){
+	  uint16_t port_d;
+
+	  if (HAL_IWDG_Refresh(&hiwdg) != HAL_OK){
+		  Error_Handler();
+	  }
+
+	  port_d = GPIOD->IDR;
+	  if(port_d & 0x000A){
+		  // There is trigger here, either + or -
+		  read_adc();
+		  find_max_min();
+		  send_data();
+		  clear_buffer();
+		  delay_sec(DELAY_SEC);
+	  }
+  }
+
   while (1)
   {
 	uint16_t port_d;
@@ -513,7 +548,7 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 #define TB_MODE							TB_MODE_0
-#define MAX_BUF_SIZE					300
+#define MAX_BUF_SIZE					500
 
 
 
@@ -575,7 +610,8 @@ inline void read_adc(){
 void send_data(){
 	char send_buf[MAX_BUF_SIZE];
 	uint8_t chksum = 0xa5;
-	sprintf(send_buf, "$STMFIELD,%d,%lu,%d,%lu*%02X\r\n", max_sample.max_ns_adc,max_sample.max_ns_t, max_sample.max_ew_adc, max_sample.max_ew_t, chksum);
+	//sprintf(send_buf, "$STMFIELD,%d,%lu,%d,%lu*%02X\r\n", max_sample.max_ns_adc,max_sample.max_ns_t, max_sample.max_ew_adc, max_sample.max_ew_t, chksum);
+	sprintf(send_buf, "$STMFIELD,%d,%lu,%d,%lu,%d,%lu,%d,%lu*%02X\r\n", rec.ns_max_adc, rec.ns_max_t, rec.ns_min_adc, rec.ns_min_t, rec.ew_max_adc, rec.ew_max_t, rec.ew_min_adc,rec.ew_min_t, chksum);
 	printf("%s",send_buf);
 	HAL_UART_Transmit(esp_uart, (uint8_t*)send_buf, strlen(send_buf), HAL_MAX_DELAY);
 }
@@ -670,6 +706,7 @@ void find_max(){
 	max_sample.max_ns_inp = (max_ns_v - 1.0) / (ADC_R2 / (ADC_R1 + ADC_R2));
 	max_sample.max_ew_inp = (max_ew_v - 1.0) / (ADC_R2 / (ADC_R1 + ADC_R2));
 
+	printf("\033[7A\r");
 	printf("----------------------------------------------------------------------------------------------\n");
 	printf("\tTrigger+\tBase counter = %lu\n",trigger_t);
 	printf("\tMax ADC\t\tMax Voltage\tInput\t\tCounter\t\tTime to Max\n");
@@ -677,7 +714,8 @@ void find_max(){
 	printf("N-S\t%d\t\t%2.4f\t\t%2.4f\t\t%lu\t\t%1.1f\n",max_sample.max_ns_adc, max_ns_v, max_sample.max_ns_inp, max_sample.max_ns_t, (max_sample.max_ns_t-trigger_t)/10.0);
 	printf("E-W\t%d\t\t%2.4f\t\t%2.4f\t\t%lu\t\t%1.1f\n",max_sample.max_ew_adc, max_ew_v, max_sample.max_ew_inp, max_sample.max_ew_t, (max_sample.max_ew_t-trigger_t)/10.0);
 	printf("----------------------------------------------------------------------------------------------\n");
-
+	printf("\e[7F");
+	printf("\x1b[7A\r");
 
 	///printf(" Max ADC = %d, Voltage = %2.4f\n", max_sample.max_ns_adc,max_ns_v);
 	//printf(" Trig @ %lu, Max @ %lu, Peak at %d us\n", counter_first, max_sample.max_ns_t, (max_sample.max_ns_t -counter_first) / 10 );
@@ -791,6 +829,128 @@ void find_min(){
 	printf(" Input = %2.4f V\n", (min_ns_v - 1.0) / (ADC_R2 / (ADC_R1 + ADC_R2)));
 	printf("----------------------------------------------------\n");
 */
+
+
+}
+
+
+
+
+void find_max_min(){
+
+	int count;
+
+	uint16_t adc_data_a, adc_data_b;
+	int16_t adc_value_a, adc_value_b;
+
+	uint32_t counter = 0;
+	uint32_t trigger_t;
+	uint16_t temp1, temp2;
+
+	sample_t *p_sample;
+
+	float ns_max_v, ns_min_v;
+	float ew_max_v, ew_min_v;
+
+
+	rec.ns_max_adc = 0;
+	rec.ns_min_adc = 0;
+	rec.ew_max_adc = 0;
+	rec.ew_min_adc = 0;
+
+	count = 0;
+	p_sample = sample;
+	do{
+
+		// Read ADC
+		adc_data_a = p_sample->data_port_f & 0x03ff;
+		adc_data_b = (p_sample->data_port_g >> 6) & 0x03ff;
+
+		// Read Counter
+		counter = 0;
+		// -- CT23-CT20 (4 bits)
+		temp1 = p_sample->data_port_g; 	// CT23-PG2, CT22-PG3, CT21-PG4, CT20-PG5
+		//temp2 = ((temp1 & 0x0004) << 1) | ((temp1 & 0x0008) >> 1) | ((temp1 & 0x0010) >> 3) | ((temp1 & 0x0020) >> 5);
+		//counter = temp2 << 20;
+		counter |= ((temp1 & 0x0004) << 21);
+		counter |= ((temp1 & 0x0008) << 19);
+		counter |= ((temp1 & 0x0010) << 17);
+		counter |= ((temp1 & 0x0020) << 15);
+
+		// -- CT19-CT18 (2 bits)
+		temp1 = p_sample->data_port_b;	// CT19-PB11, CT18-PB10
+		temp2 = (temp1 >> 10) & 0x0003;
+		//temp2 = 0xffff;
+		counter |= (temp2 << 18);
+
+		// -- CT17-CT9 (9 bits)
+		temp1 = p_sample->data_port_e;	// CT17-PE15 ... CT9-PB7
+		temp2 = (temp1 >> 7) & 0x01ff;
+		counter |= (temp2 << 9);
+
+		// -- CT8-CT7 (2 bits)
+		temp1 = p_sample->data_port_g;	// CT8-PG1, CT7-PG0
+		temp2 = temp1 & 0x0003;
+		counter |= (temp2 << 7);
+
+		// -- CT6-CT2 (5 bits)
+		temp1 = p_sample->data_port_f;	// CT6-PF15 ... CT2-PF11
+		temp2 = (temp1 >> 11) & 0x001f;
+		counter |= (temp2 << 2);
+
+		// -- CT1-CT0 (2 bits)
+		temp1 = p_sample->data_port_b;	// CT1-PB2, CT0-PB1
+		temp2 = (temp1 >> 1) & 0x0003;
+		counter |= temp2;
+
+		// Convert the adc_data to adc_value
+		adc_value_a = convert_number(adc_data_a);
+		adc_value_b = -(convert_number(adc_data_b));			// *Invert to negative value due to the hardware bug
+
+
+		// Find Max/Min of N-S
+		if(adc_value_a > rec.ns_max_adc){
+			rec.ns_max_adc = adc_value_a;
+			rec.ns_max_t = counter;
+		}else if (adc_value_a < rec.ns_min_adc){
+			rec.ns_min_adc = adc_value_a;
+			rec.ns_min_t = counter;
+		}
+
+		// Find Max/Min of E-W
+		if(adc_value_b > rec.ew_max_adc){
+			rec.ew_max_adc = adc_value_b;
+			rec.ew_max_t = counter;
+		}else if (adc_value_b < rec.ew_min_adc){
+			rec.ew_min_adc = adc_value_b;
+			rec.ew_min_t = counter;
+		}
+
+		p_sample++;
+		if (count == 0) trigger_t = counter;
+	} while(++count < SAMPLE_READ_MAX);
+
+
+	// Calculation
+	ns_max_v = ((ADC_VREF_P - ADC_VREF_N) * rec.ns_max_adc / 512) + ADC_OFFSET;
+	ns_min_v = ((ADC_VREF_P - ADC_VREF_N) * rec.ns_min_adc / 512) + ADC_OFFSET;
+	ew_max_v = ((ADC_VREF_P - ADC_VREF_N) * rec.ew_max_adc / 512) + ADC_OFFSET;
+	ew_min_v = ((ADC_VREF_P - ADC_VREF_N) * rec.ew_min_adc / 512) + ADC_OFFSET;
+
+	// Printing
+	printf("\n");
+	printf("-------------------------------------------------------------------------------\n");
+	printf("\tMax ADC\t\tMax V\t\tMin ADC\t\tMin V\n");
+	printf("\tMax Cnt\t\tMax us\t\tMin Cnt\t\tMin us\n");
+	printf("-------------------------------------------------------------------------------\n");
+	printf("N-S\t%d\t\t%2.4f\t\t%d\t\t%2.4f\n", rec.ns_max_adc, ns_max_v, rec.ns_min_adc, ns_min_v);
+	printf("\t%lu\t\t%1.1f\t\t%lu\t\t%1.1f\n", rec.ns_max_t, (rec.ns_max_t-trigger_t)/10.0, rec.ns_min_t, (rec.ns_min_t-trigger_t)/10.0);
+	printf("\n");
+	printf("E-W\t%d\t\t%2.4f\t\t%d\t\t%2.4f\n", rec.ew_max_adc, ew_max_v, rec.ew_min_adc, ew_min_v);
+	printf("\t%lu\t\t%1.1f\t\t%lu\t\t%1.1f\n", rec.ew_max_t, (rec.ew_max_t-trigger_t)/10.0, rec.ew_min_t, (rec.ew_min_t-trigger_t)/10.0);
+	printf("\n");
+	printf("\tBase counter = %lu\n",trigger_t);
+
 
 
 }
