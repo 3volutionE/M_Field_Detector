@@ -53,6 +53,9 @@ dkms.conf
 
 
 # STM workspace
-./stm32_ws/.metadata/
+stm32_ws/.metadata/
+stm32_ws/m_field_stm32/Debug/
+
 # debug information files
 *.dwo
+*.log

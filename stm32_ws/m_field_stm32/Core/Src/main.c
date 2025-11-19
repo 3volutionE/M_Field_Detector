@@ -77,9 +77,15 @@ typedef struct {
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define SAMPLE_READ_MAX					1000
-#define ADC_VREF_P						2.003
-#define ADC_VREF_N						0.994
-#define ADC_OFFSET						1.55
+//#define ADC_VREF_P						2.003
+//#define ADC_VREF_N						0.994
+//#define ADC_OFFSET						1.55
+
+#define ADC_VREF_P						2.048
+#define ADC_VREF_N						0.988
+#define ADC_OFFSET						1.52
+
+
 #define ADC_R1         				 	10000.0
 #define ADC_R2          				4320.0
 #define DELAY_SEC						3
@@ -612,7 +618,7 @@ void send_data(){
 	uint8_t chksum = 0xa5;
 	//sprintf(send_buf, "$STMFIELD,%d,%lu,%d,%lu*%02X\r\n", max_sample.max_ns_adc,max_sample.max_ns_t, max_sample.max_ew_adc, max_sample.max_ew_t, chksum);
 	sprintf(send_buf, "$STMFIELD,%d,%lu,%d,%lu,%d,%lu,%d,%lu*%02X\r\n", rec.ns_max_adc, rec.ns_max_t, rec.ns_min_adc, rec.ns_min_t, rec.ew_max_adc, rec.ew_max_t, rec.ew_min_adc,rec.ew_min_t, chksum);
-	printf("%s",send_buf);
+	printf("\nSend update to ESP32 = %s\n",send_buf);
 	HAL_UART_Transmit(esp_uart, (uint8_t*)send_buf, strlen(send_buf), HAL_MAX_DELAY);
 }
 
@@ -835,6 +841,13 @@ void find_min(){
 
 
 
+float cal_voltage_adc(int16_t adc_val){
+	return ((ADC_VREF_P - ADC_VREF_N) * adc_val / 512) + ADC_OFFSET;
+}
+
+float cal_voltage_inp(float vol_adc){
+	return ((vol_adc - 1.0) / (ADC_R2 / (ADC_R1 + ADC_R2)));
+}
 
 void find_max_min(){
 
@@ -852,6 +865,8 @@ void find_max_min(){
 	float ns_max_v, ns_min_v;
 	float ew_max_v, ew_min_v;
 
+	float ns_max_inp, ns_min_inp;
+	float ew_max_inp, ew_min_inp;
 
 	rec.ns_max_adc = 0;
 	rec.ns_min_adc = 0;
@@ -932,22 +947,33 @@ void find_max_min(){
 
 
 	// Calculation
-	ns_max_v = ((ADC_VREF_P - ADC_VREF_N) * rec.ns_max_adc / 512) + ADC_OFFSET;
-	ns_min_v = ((ADC_VREF_P - ADC_VREF_N) * rec.ns_min_adc / 512) + ADC_OFFSET;
-	ew_max_v = ((ADC_VREF_P - ADC_VREF_N) * rec.ew_max_adc / 512) + ADC_OFFSET;
-	ew_min_v = ((ADC_VREF_P - ADC_VREF_N) * rec.ew_min_adc / 512) + ADC_OFFSET;
+	//ns_max_v = ((ADC_VREF_P - ADC_VREF_N) * rec.ns_max_adc / 512) + ADC_OFFSET;
+	//ns_min_v = ((ADC_VREF_P - ADC_VREF_N) * rec.ns_min_adc / 512) + ADC_OFFSET;
+	//ew_max_v = ((ADC_VREF_P - ADC_VREF_N) * rec.ew_max_adc / 512) + ADC_OFFSET;
+	//ew_min_v = ((ADC_VREF_P - ADC_VREF_N) * rec.ew_min_adc / 512) + ADC_OFFSET;
+
+	ns_max_v = cal_voltage_adc(rec.ns_max_adc);
+	ns_min_v = cal_voltage_adc(rec.ns_min_adc);
+	ew_max_v = cal_voltage_adc(rec.ew_max_adc);
+	ew_min_v = cal_voltage_adc(rec.ew_min_adc);
+
+	ns_max_inp = cal_voltage_inp(ns_max_v);
+	ns_min_inp = cal_voltage_inp(ns_min_v);
+	ew_max_inp = cal_voltage_inp(ew_max_v);
+	ew_min_inp = cal_voltage_inp(ew_min_v);
+
 
 	// Printing
 	printf("\n");
 	printf("-------------------------------------------------------------------------------\n");
-	printf("\tMax ADC\t\tMax V\t\tMin ADC\t\tMin V\n");
-	printf("\tMax Cnt\t\tMax us\t\tMin Cnt\t\tMin us\n");
+	printf("\tMax ADC\t\tMax V\t(Inp)\t\tMin ADC\t\tMin V\t(Inp)\n");
+	printf("\tMax Cnt\t\tMax us\t\t\tMin Cnt\t\tMin us\n");
 	printf("-------------------------------------------------------------------------------\n");
-	printf("N-S\t%d\t\t%2.4f\t\t%d\t\t%2.4f\n", rec.ns_max_adc, ns_max_v, rec.ns_min_adc, ns_min_v);
-	printf("\t%lu\t\t%1.1f\t\t%lu\t\t%1.1f\n", rec.ns_max_t, (rec.ns_max_t-trigger_t)/10.0, rec.ns_min_t, (rec.ns_min_t-trigger_t)/10.0);
+	printf("N-S\t%d\t\t%2.4f\t(%2.4f)\t%d\t\t%2.4f\t(%2.4f)\n", rec.ns_max_adc, ns_max_v, ns_max_inp, rec.ns_min_adc, ns_min_v, ns_min_inp);
+	printf("\t%lu\t\t%1.1f\t\t\t%lu\t\t%1.1f\n", rec.ns_max_t, (rec.ns_max_t-trigger_t)/10.0, rec.ns_min_t, (rec.ns_min_t-trigger_t)/10.0);
 	printf("\n");
-	printf("E-W\t%d\t\t%2.4f\t\t%d\t\t%2.4f\n", rec.ew_max_adc, ew_max_v, rec.ew_min_adc, ew_min_v);
-	printf("\t%lu\t\t%1.1f\t\t%lu\t\t%1.1f\n", rec.ew_max_t, (rec.ew_max_t-trigger_t)/10.0, rec.ew_min_t, (rec.ew_min_t-trigger_t)/10.0);
+	printf("E-W\t%d\t\t%2.4f\t(%2.4f)\t%d\t\t%2.4f\t(%2.4f)\n", rec.ew_max_adc, ew_max_v, ew_max_inp, rec.ew_min_adc, ew_min_v, ew_min_inp);
+	printf("\t%lu\t\t%1.1f\t\t\t%lu\t\t%1.1f\n", rec.ew_max_t, (rec.ew_max_t-trigger_t)/10.0, rec.ew_min_t, (rec.ew_min_t-trigger_t)/10.0);
 	printf("\n");
 	printf("\tBase counter = %lu\n",trigger_t);
 
