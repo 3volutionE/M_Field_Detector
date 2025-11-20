@@ -3,6 +3,7 @@
 
   // DEBUG SECTION //  
   #define DEBUG_FN_PRINT_DATA
+  #define DEBUG_PRINT
 
   // SYSTEM CONFIGURATION //
   #define TIME_OUTPUT_DECIMAL_PLACE           7
@@ -21,13 +22,19 @@
   #define STM_SENTENCE_MAX_LEN  100
 
  
-
+/*
 #define ADC_VREF_P			2.003
 #define ADC_VREF_N			0.994
 #define ADC_OFFSET			1.55
 #define ADC_R1          10000.0
 #define ADC_R2          4320.0
+*/
 
+#define ADC_VREF_P						2.048
+#define ADC_VREF_N						0.988
+#define ADC_OFFSET						1.52
+#define ADC_R1         				 	10000.0
+#define ADC_R2          				4320.0
   
   // MQTT SECTION //
   #define MQTT_SELECT 2
