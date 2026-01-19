@@ -77,18 +77,22 @@ typedef struct {
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define SAMPLE_READ_MAX					1000
-//#define ADC_VREF_P						2.003
-//#define ADC_VREF_N						0.994
-//#define ADC_OFFSET						1.55
-
-#define ADC_VREF_P						2.048
-#define ADC_VREF_N						0.988
-#define ADC_OFFSET						1.52
-
-
 #define ADC_R1         				 	10000.0
 #define ADC_R2          				4320.0
 #define DELAY_SEC						3
+
+#define SETTING_USE_DATASHEET_PARAM
+//#define SETTING_INVERT_EW_CHANNEL
+
+#ifdef SETTING_USE_DATASHEET_PARAM
+	#define ADC_VREF_P						2.048
+	#define ADC_VREF_N						0.988
+	#define ADC_OFFSET						1.52
+#else
+	#define ADC_VREF_P						2.003
+	#define ADC_VREF_N						0.994
+	#define ADC_OFFSET						1.55
+#endif
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -846,7 +850,7 @@ float cal_voltage_adc(int16_t adc_val){
 }
 
 float cal_voltage_inp(float vol_adc){
-	return ((vol_adc - 1.0) / (ADC_R2 / (ADC_R1 + ADC_R2)));
+	return ((vol_adc - 1.5) / (ADC_R2 / (ADC_R1 + ADC_R2)));
 }
 
 void find_max_min(){
@@ -920,8 +924,12 @@ void find_max_min(){
 
 		// Convert the adc_data to adc_value
 		adc_value_a = convert_number(adc_data_a);
-		adc_value_b = -(convert_number(adc_data_b));			// *Invert to negative value due to the hardware bug
 
+#ifdef SETTING_INVERT_EW_CHANNEL
+		adc_value_b = -(convert_number(adc_data_b));			// *Invert to negative value due to the hardware bug
+#else
+		adc_value_b = convert_number(adc_data_b);
+#endif
 
 		// Find Max/Min of N-S
 		if(adc_value_a > rec.ns_max_adc){
