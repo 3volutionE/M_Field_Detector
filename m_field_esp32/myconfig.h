@@ -1,6 +1,10 @@
 #ifndef _MYCONFIG_H_
 #define _MYCONFIG_H_
 
+  // IO //
+  #define TRIG_P_PIN      14
+  #define TRIG_N_PIN      15
+
   // DEBUG SECTION //  
   #define DEBUG_FN_PRINT_DATA
   #define DEBUG_PRINT

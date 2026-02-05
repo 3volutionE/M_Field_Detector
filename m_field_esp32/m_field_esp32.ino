@@ -43,7 +43,7 @@ typedef struct {
 } DataRecord_t;
 
 DataRecord_t m_field_data;
-
+int trigger_sec;
 
 
 
@@ -93,6 +93,8 @@ PubSubClient mqtt_client(mqtt_server, MQTT_PORT, callback, eth_client);
 void setup() {
   serial_setup();
   debug_serial->println("ESP32 started");
+  pinMode(TRIG_P_PIN, INPUT);
+  pinMode(TRIG_N_PIN, INPUT);
   gps_setup();
   ethernet_setup();
   mqtt_setup();
@@ -111,27 +113,36 @@ void loop() {
 
   //String mqtt_pub_str = "This is a test from K**ell";
 
+  if (digitalRead(TRIG_P_PIN)){
+    trigger_sec = m_field_data.t_sec;
+  }else if (digitalRead(TRIG_N_PIN)){
+    trigger_sec = m_field_data.t_sec;
+  }else{
+    // Read GPS first, more important as it is affect timing
+    if (gps_serial->available() != 0) {
+      gps_read();
+    }
+  
+    if (stm_serial->available() != 0) {
+      // Mark base time
+      m_field_data.t_base_sec = m_field_data.t_sec;
+      if (stm_read()) {
+        // Interpret and calculate and send data
+        calculate_data();
+        String mqtt_payload = build_mqtt_payload();
+        //debug_serial->write(mqtt_payload.c_str());
+        //debug_serial->println("");
 
-  // Read GPS first, more important as it is affect timing
-  if (gps_serial->available() != 0) {
-    gps_read();
-  }
-
-
-  if (stm_serial->available() != 0) {
-    // Mark base time
-    m_field_data.t_base_sec = m_field_data.t_sec;
-    if (stm_read()) {
-      // Interpret and calculate and send data
-      calculate_data();
-      String mqtt_payload = build_mqtt_payload();
-      //debug_serial->write(mqtt_payload.c_str());
-      //debug_serial->println("");
-
-      publish_data(mqtt_payload);
-      print_data();
+        publish_data(mqtt_payload);
+        print_data();
+      }             
     }
   }
+  
+  
+  
+
+  
 
   mqtt_client.loop();
   //delay(5000);
@@ -406,16 +417,21 @@ double cal_time(uint8_t t_base, uint32_t t_counter) {
 
 void calculate_data() {
   m_field_data.ns_max_v = cal_voltage(m_field_data.ns_max_adc);
-  m_field_data.ns_max_t_sec = cal_time(m_field_data.t_base_sec, m_field_data.ns_max_c);
+  //m_field_data.ns_max_t_sec = cal_time(m_field_data.t_base_sec, m_field_data.ns_max_c);
+  m_field_data.ns_max_t_sec = cal_time(trigger_sec, m_field_data.ns_max_c);
 
   m_field_data.ns_min_v = cal_voltage(m_field_data.ns_min_adc);
-  m_field_data.ns_min_t_sec = cal_time(m_field_data.t_base_sec, m_field_data.ns_min_c);
+  //m_field_data.ns_min_t_sec = cal_time(m_field_data.t_base_sec, m_field_data.ns_min_c);
+  m_field_data.ns_min_t_sec = cal_time(trigger_sec, m_field_data.ns_min_c);
 
   m_field_data.ew_max_v = cal_voltage(m_field_data.ew_max_adc);
-  m_field_data.ew_max_t_sec = cal_time(m_field_data.t_base_sec, m_field_data.ew_max_c);
+  //m_field_data.ew_max_t_sec = cal_time(m_field_data.t_base_sec, m_field_data.ew_max_c);
+  m_field_data.ew_max_t_sec = cal_time(trigger_sec, m_field_data.ew_max_c);
+
 
   m_field_data.ew_min_v = cal_voltage(m_field_data.ew_min_adc);
-  m_field_data.ew_min_t_sec = cal_time(m_field_data.t_base_sec, m_field_data.ew_min_c);
+  //m_field_data.ew_min_t_sec = cal_time(m_field_data.t_base_sec, m_field_data.ew_min_c);
+  m_field_data.ew_min_t_sec = cal_time(trigger_sec, m_field_data.ew_min_c);
 }
 // ====================================================================================================================
 
