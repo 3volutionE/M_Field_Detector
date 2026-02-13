@@ -222,48 +222,14 @@ int main(void)
 	  }
 
 	  port_d = GPIOD->IDR;
-	  if(port_d & 0x000A){
-		  // There is trigger here, either + or -
+	  if(port_d & 0x000A){			// Use 0x0002 for TRIG+, 0x0008 for TRIG- or 0x000A for Both trigger
+		  // TRIG +
 		  read_adc();
 		  find_max_min();
 		  send_data();
 		  clear_buffer();
 		  delay_sec(DELAY_SEC);
 	  }
-  }
-
-  while (1)
-  {
-	uint16_t port_d;
-	//if(trigger){
-	//	trigger = 0;
-	//	find_max2();
-	//}
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-	// Reset Watchdog timer
-	if (HAL_IWDG_Refresh(&hiwdg) != HAL_OK){
-		Error_Handler();
-	}
-
-	port_d = GPIOD->IDR;
-	//printf("PORT D = 0x%X\n",port_d);
-	if((port_d & 0x0002) > 0){
-		// TRIG +
-		//printf("Trig+\n");
-		read_adc();
-		find_max();
-		send_data();
-		delay_sec(DELAY_SEC);
-	}else if ((port_d & 0x0008) > 0){
-		read_adc();
-		find_min();
-		//send_data_min();
-		delay_sec(DELAY_SEC);
-	}
-
-	//DELAY(SSSSS)
   }
   /* USER CODE END 3 */
 }

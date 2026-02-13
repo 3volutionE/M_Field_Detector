@@ -44,8 +44,9 @@ typedef struct {
 
 DataRecord_t m_field_data;
 int trigger_sec;
-
-
+int wait_stm_sentence;
+int trig_p_event;
+int trig_n_event;
 
 
 /* 
@@ -93,12 +94,17 @@ PubSubClient mqtt_client(mqtt_server, MQTT_PORT, callback, eth_client);
 void setup() {
   serial_setup();
   debug_serial->println("ESP32 started");
-  pinMode(TRIG_P_PIN, INPUT);
-  pinMode(TRIG_N_PIN, INPUT);
+  pinMode(TRIG_P_PIN, INPUT_PULLDOWN);
+  pinMode(TRIG_N_PIN, INPUT_PULLDOWN);
   gps_setup();
   ethernet_setup();
   mqtt_setup();
   debug_serial->println("ESP32 Application started\n");
+
+  wait_stm_sentence = 0;
+  trig_p_event = 0;
+  trig_n_event = 0;
+
 }
 
 /*
@@ -113,16 +119,22 @@ void loop() {
 
   //String mqtt_pub_str = "This is a test from K**ell";
 
-  if (digitalRead(TRIG_P_PIN)){
-    trigger_sec = m_field_data.t_sec;
-  }else if (digitalRead(TRIG_N_PIN)){
-    trigger_sec = m_field_data.t_sec;
-  }else{
-    // Read GPS first, more important as it is affect timing
+  if (!(trig_p_event || trig_n_event)){
+    // Do his task when no trigger
+    if (digitalRead(TRIG_P_PIN)){
+      trigger_sec = m_field_data.t_sec;
+      trig_p_event = 1;
+      debug_serial->printf("Trigger_P Event at Sec = %d\n", trigger_sec);    
+    }else if (digitalRead(TRIG_N_PIN)){
+      trigger_sec = m_field_data.t_sec;
+      trig_n_event = 1;
+      debug_serial->printf("Trigger_N Event at Sec = %d\n", trigger_sec);
+    }
+  
     if (gps_serial->available() != 0) {
       gps_read();
     }
-  
+  }else{
     if (stm_serial->available() != 0) {
       // Mark base time
       m_field_data.t_base_sec = m_field_data.t_sec;
@@ -135,14 +147,19 @@ void loop() {
 
         publish_data(mqtt_payload);
         print_data();
-      }             
+      }
+      
+      if(trig_p_event){
+        while(digitalRead(TRIG_P_PIN) != 0);
+        trig_p_event = 0;
+      }
+
+      if(trig_n_event){
+        while(digitalRead(TRIG_P_PIN) != 0);
+        trig_n_event = 0;
+      }
     }
   }
-  
-  
-  
-
-  
 
   mqtt_client.loop();
   //delay(5000);
@@ -200,23 +217,30 @@ int gps_read() {
 
   byte_read = gps_serial->readBytes(gps_byte, GPS_SENTENCE_MAX_LEN);
   gps_sentence = String(gps_byte);
+  #ifdef DEBUG_GPS_ENABLE
+    debug_serial->printf("Sentence : %s\n", gps_sentence.c_str());
+  #endif
 
-  // TEMP
-  //gps_sentence = "$GPGLL,3442.8146,N,13520.1090,E,025411.516,A,A*5D";
-  //
+  /* SAMPLE SENTENCE 
+    $GNGLL,0000.0000,N,00000.0000,E,000133.000,V,N*5E
+  */
 
-  index = get_substr(gps_sentence, ',', index, &header);  // Expect $XXGLL
+  index = 0;
+  index = get_substr(gps_sentence, ',', index, &header);  // Expect $XXGLL  
+  if(header != "$GNGLL"){
+    #ifdef DEBUG_GPS_ENABLE
+      debug_serial->printf("Header Error, expect %s, recviced %s\n", "$GNGLL", header.c_str());
+    #endif
+    return -1;
+  }
   index = get_substr(gps_sentence, ',', index, &pos_lat);
   index = get_substr(gps_sentence, ',', index, &pos_ns);
   index = get_substr(gps_sentence, ',', index, &pos_long);
   index = get_substr(gps_sentence, ',', index, &pos_ew);
   index = get_substr(gps_sentence, ',', index, &time_str);
   index = get_substr(gps_sentence, ',', index, &status);
-  index = get_substr(gps_sentence, '*', index, &mode);
-
+  index = get_substr(gps_sentence, '*', index, &mode);  
   //index = get_substr(gps_sentence, ',', index, &chksum);
-  //debug_serial->printf("Lat : %s,%s Long : %s,%s Time : %s, status : %s, chksum : %s\n", pos_lat.c_str() ,pos_ns.c_str(),  pos_long.c_str(), pos_ew.c_str(), time_str.c_str(), status.c_str(), chksum.c_str());
-  //debug_serial->printf("Lat : %s,%s Long : %s,%s Time : %s, status : %s\n", pos_lat.c_str() ,pos_ns.c_str(),  pos_long.c_str(), pos_ew.c_str(), time_str.c_str(), status.c_str());
 
   // TODO:
   // Check sentence header if it is $XXGLL
@@ -231,6 +255,11 @@ int gps_read() {
   m_field_data.t_hour = time_str.substring(0, 2).toInt();
   m_field_data.t_min = time_str.substring(2, 4).toInt();
   m_field_data.t_sec = time_str.substring(4, 6).toInt();
+
+  #ifdef DEBUG_GPS_ENABLE
+    debug_serial->printf("Lat : %s,%s Long : %s,%s Time : %s, status : %s, chksum : %s\n", pos_lat.c_str() ,pos_ns.c_str(),  pos_long.c_str(), pos_ew.c_str(), time_str.c_str(), status.c_str(), chksum.c_str());
+    debug_serial->printf("Decode Time = %d:%d:%d\n",m_field_data.t_hour,m_field_data.t_min,m_field_data.t_sec);
+  #endif
 
   return ret_val;
 }

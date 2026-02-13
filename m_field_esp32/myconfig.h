@@ -9,6 +9,10 @@
   #define DEBUG_FN_PRINT_DATA
   #define DEBUG_PRINT
 
+  #ifdef DEBUG_PRINT
+    //#define DEBUG_GPS_ENABLE
+  #endif
+
   // SYSTEM CONFIGURATION //
   #define TIME_OUTPUT_DECIMAL_PLACE           7
   #define TIME_COUNTER_PERIOD                 0.1     // uS
@@ -20,7 +24,7 @@
 
 
   // GNSS SECTION //
-  #define GPS_SENTENCE_MAX_LEN  100
+  #define GPS_SENTENCE_MAX_LEN  200
 
   // STM SECTION //  
   #define STM_SENTENCE_MAX_LEN  100
