@@ -1,16 +1,28 @@
 #ifndef _MYCONFIG_H_
 #define _MYCONFIG_H_
 
+
+  // OPERATION MODE //
+  #define MODE_TIME_AFER_TRIG   1
+  #define MODE_TIME_REALTIME    2
+  #define MODE                  MODE_TIME_AFER_TRIG
+  
+  
+  #define TRIG_N_ENABLE
+  #define ETH_ENABLE
+  #define MQTT_ENABLE
+  
+
   // IO //
   #define TRIG_P_PIN      14
   #define TRIG_N_PIN      15
 
   // DEBUG SECTION //  
-  #define DEBUG_FN_PRINT_DATA
-  #define DEBUG_PRINT
+  #define DEBUG_PRINT // Comment this line to DISABLE ALL debug
 
-  #ifdef DEBUG_PRINT
+  #ifdef DEBUG_PRINT   // Comment each line below to DISABLE each function debug
     //#define DEBUG_GPS_ENABLE
+    #define DEBUG_FN_PRINT_DATA  
   #endif
 
   // SYSTEM CONFIGURATION //

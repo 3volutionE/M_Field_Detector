@@ -65,7 +65,7 @@ int get_substr(const String str, const char delim, int start_pos, String *ret_st
 void callback(char *topic, byte *payload, unsigned int length);
 
 #ifdef DEBUG_FN_PRINT_DATA
-void print_data();
+  void print_data();
 #endif
 
 
@@ -97,9 +97,19 @@ void setup() {
   pinMode(TRIG_P_PIN, INPUT_PULLDOWN);
   pinMode(TRIG_N_PIN, INPUT_PULLDOWN);
   gps_setup();
-  ethernet_setup();
-  mqtt_setup();
+  #ifdef ETH_ENABLE
+    ethernet_setup();
+  #endif
+
+  #ifdef MQTT_ENABLE
+    mqtt_setup();
+  #endif
   debug_serial->println("ESP32 Application started\n");
+  #if MODE == MODE_TIME_AFER_TRIG
+    debug_serial->println("Operation Mode : Get time after trigger\n");
+  #else
+    debug_serial->println("Operation Mode : Get time in real-time\n");
+  #endif
 
   wait_stm_sentence = 0;
   trig_p_event = 0;
@@ -111,63 +121,90 @@ void setup() {
   * Loop Function
 */
 
-void loop() {
-
-  // put your main code here, to run repeatedly:
-  //DataRecord_t data_rec;
-  //int byte_read;
-
-  //String mqtt_pub_str = "This is a test from K**ell";
-
+void loop(){
+#if MODE == MODE_TIME_AFER_TRIG
+  // Wait for Trigger
   if (!(trig_p_event || trig_n_event)){
     // Do his task when no trigger
     if (digitalRead(TRIG_P_PIN)){
-      trigger_sec = m_field_data.t_sec;
       trig_p_event = 1;
-      debug_serial->printf("Trigger_P Event at Sec = %d\n", trigger_sec);    
-    }else if (digitalRead(TRIG_N_PIN)){
-      trigger_sec = m_field_data.t_sec;
+      debug_serial->printf("Trigger_P Event");
+    }
+#ifdef TRIG_N_ENABLE
+    else if (digitalRead(TRIG_N_PIN))
+    {
       trig_n_event = 1;
-      debug_serial->printf("Trigger_N Event at Sec = %d\n", trigger_sec);
+      debug_serial->printf("Trigger_N Event");
     }
-  
-    if (gps_serial->available() != 0) {
-      gps_read();
-    }
+#endif // TRIG_N_ENABLE
   }else{
-    if (stm_serial->available() != 0) {
-      // Mark base time
-      m_field_data.t_base_sec = m_field_data.t_sec;
-      if (stm_read()) {
+    // There was a trigger
+    // Time update
+    // - clear serial rx buffer first
+    while(gps_serial->available() >0) gps_serial->read();
+    // Wait until gps send new sentence
+    while(gps_serial->available() == 0);
+    gps_read();
+    trigger_sec = m_field_data.t_sec;
+    debug_serial->printf(", Trigger at Sec = %d\n", trigger_sec);
+  
+    // Wait until STM send message
+    while(stm_serial->available() == 0);
+    if (stm_read()) {
         // Interpret and calculate and send data
         calculate_data();
         String mqtt_payload = build_mqtt_payload();
-        //debug_serial->write(mqtt_payload.c_str());
-        //debug_serial->println("");
-
         publish_data(mqtt_payload);
-        print_data();
-      }
-      
-      if(trig_p_event){
-        while(digitalRead(TRIG_P_PIN) != 0);
-        trig_p_event = 0;
-      }
+        #ifdef DEBUG_FN_PRINT_DATA
+          print_data();
+        #endif
+    } 
 
-      if(trig_n_event){
-        while(digitalRead(TRIG_P_PIN) != 0);
-        trig_n_event = 0;
-      }
+    // Wait until trigger deactivated
+    if(trig_p_event){
+      while(digitalRead(TRIG_P_PIN) != 0);
+      trig_p_event = 0;
+    }
+#ifdef TRIG_N_ENABLE
+    if(trig_n_event){
+      while(digitalRead(TRIG_P_PIN) != 0);
+      trig_n_event = 0;
+    }
+#endif // TRIG_N_ENABLE
+  }
+  // If the triiger still cannot be captured, need to move this code to the above if() block
+  #ifdef MQTT_ENABLE
+    mqtt_client.loop();
+  #endif
+
+#else // MODE
+
+  // Read GPS first, more important as it is affect timing
+  if (gps_serial->available() != 0) {
+    gps_read();
+  }
+
+  if (stm_serial->available() != 0) {
+    // Mark base time
+    trigger_sec = m_field_data.t_sec;
+    if (stm_read()) {
+      // Interpret and calculate and send data
+      calculate_data();
+      String mqtt_payload = build_mqtt_payload();
+      //debug_serial->write(mqtt_payload.c_str());
+      //debug_serial->println("");
+
+      publish_data(mqtt_payload);
+      print_data();
     }
   }
 
   mqtt_client.loop();
-  //delay(5000);
-  //debug_serial->println("Testing");
-  //mqtt_client.publish(MQTT_PUB_TOPIC, mqtt_pub_str.c_str());
-  //send_data(data_rec);
-  //mqtt_client.loop();
+    
+#endif // MODE
 }
+
+
 // ====================================================================================================================
 
 
@@ -240,7 +277,9 @@ int gps_read() {
   index = get_substr(gps_sentence, ',', index, &time_str);
   index = get_substr(gps_sentence, ',', index, &status);
   index = get_substr(gps_sentence, '*', index, &mode);  
+  chksum = gps_sentence.substring(index, index+2);
   //index = get_substr(gps_sentence, ',', index, &chksum);
+
 
   // TODO:
   // Check sentence header if it is $XXGLL
@@ -257,7 +296,7 @@ int gps_read() {
   m_field_data.t_sec = time_str.substring(4, 6).toInt();
 
   #ifdef DEBUG_GPS_ENABLE
-    debug_serial->printf("Lat : %s,%s Long : %s,%s Time : %s, status : %s, chksum : %s\n", pos_lat.c_str() ,pos_ns.c_str(),  pos_long.c_str(), pos_ew.c_str(), time_str.c_str(), status.c_str(), chksum.c_str());
+    debug_serial->printf("Lat : %s,%s Long : %s,%s Time : %s, status : %s, mode : %s, chksum : %s\n", pos_lat.c_str() ,pos_ns.c_str(),  pos_long.c_str(), pos_ew.c_str(), time_str.c_str(), status.c_str(), mode.c_str(), chksum.c_str());
     debug_serial->printf("Decode Time = %d:%d:%d\n",m_field_data.t_hour,m_field_data.t_min,m_field_data.t_sec);
   #endif
 
