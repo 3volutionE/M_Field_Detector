@@ -8,9 +8,9 @@
   #define MODE                  MODE_TIME_AFER_TRIG
   
   
-  //#define TRIG_N_ENABLE
-  //#define ETH_ENABLE
-  //#define MQTT_ENABLE
+  #define TRIG_N_ENABLE
+  #define ETH_ENABLE
+  #define MQTT_ENABLE
   #define WATCHDOG_ENABLE
 
   // IO //
