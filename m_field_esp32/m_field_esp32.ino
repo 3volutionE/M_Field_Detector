@@ -1,36 +1,36 @@
-//#include "soc/soc.h"
-//#include "soc/rtc_cntl_reg.h"
 #include <EthernetESP32.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include "myconfig.h"
 
-//Time curr_time;
-
-
-typedef struct {
-  //int id;
+/* 
+  * Struct and Typedef
+*/
+typedef struct {    
   uint8_t t_sec;
   uint8_t t_min;
   uint8_t t_hour;
-  uint8_t t_base_sec;
-  
+  uint8_t t_trig_sec;
+
+  // ADC value info  
   int16_t ns_max_adc = 0;
   int16_t ns_min_adc = 0;
-  uint32_t ns_max_c = 0;
-  uint32_t ns_min_c = 0;
-
-  // ADC value info
   int16_t ew_max_adc = 0;
   int16_t ew_min_adc = 0;
+
+  // Counter info
+  uint32_t ns_max_c = 0;
+  uint32_t ns_min_c = 0;
   uint32_t ew_max_c = 0;
   uint32_t ew_min_c = 0;
 
+  // Voltage info
   float ns_max_v = 0.0;
   float ns_min_v = 0.0;
   float ew_max_v = 0.0;
   float ew_min_v = 0.0;
 
+  // Timing info
   double ns_max_t_sec;
   double ns_min_t_sec;
   double ew_max_t_sec;
@@ -41,12 +41,6 @@ typedef struct {
   String gnss_long;
   String gnss_time;
 } DataRecord_t;
-
-DataRecord_t m_field_data;
-int trigger_sec;
-int wait_stm_sentence;
-int trig_p_event;
-int trig_n_event;
 
 
 /* 
@@ -64,7 +58,8 @@ void gps_uart_send_cmd(char *cmd);
 int get_substr(const String str, const char delim, int start_pos, String *ret_str);
 void callback(char *topic, byte *payload, unsigned int length);
 
-#ifdef DEBUG_FN_PRINT_DATA
+
+#ifdef DEBUG_PRINT_DATA_ENABLE
   void print_data();
 #endif
 
@@ -76,6 +71,10 @@ HardwareSerial *gps_serial;
 HardwareSerial *stm_serial;
 HardwareSerial *debug_serial;
 
+DataRecord_t m_field_data;
+int trig_p_event;
+int trig_n_event;
+
 const char *mqtt_server = MQTT_SERVER;  // Broker address
 IPAddress ip(192, 168, 1, 111);
 EMACDriver driver(ETH_PHY_LAN8720, 23, 18, 16);
@@ -83,6 +82,7 @@ EthernetClient eth_client;
 PubSubClient mqtt_client(mqtt_server, MQTT_PORT, callback, eth_client);
 
 // End Global Variables
+
 
 
 // ====================================================================================================================
@@ -93,10 +93,14 @@ PubSubClient mqtt_client(mqtt_server, MQTT_PORT, callback, eth_client);
 */
 void setup() {
   serial_setup();
-  debug_serial->println("ESP32 started");
+  #ifdef DEBUG_SYSTEM_ENABLE
+    debug_serial->println("ESP32 started");
+  #endif
+  
   pinMode(TRIG_P_PIN, INPUT_PULLDOWN);
   pinMode(TRIG_N_PIN, INPUT_PULLDOWN);
   gps_setup();
+  
   #ifdef ETH_ENABLE
     ethernet_setup();
   #endif
@@ -104,23 +108,25 @@ void setup() {
   #ifdef MQTT_ENABLE
     mqtt_setup();
   #endif
-  debug_serial->println("ESP32 Application started\n");
+  
+  #ifdef DEBUG_SYSTEM_ENABLE
+    debug_serial->println("ESP32 Application started\n");
+  #endif
+  
   #if MODE == MODE_TIME_AFER_TRIG
     debug_serial->println("Operation Mode : Get time after trigger\n");
   #else
     debug_serial->println("Operation Mode : Get time in real-time\n");
   #endif
-
-  wait_stm_sentence = 0;
+  
+  // Variable initialize
   trig_p_event = 0;
   trig_n_event = 0;
-
 }
 
 /*
   * Loop Function
 */
-
 void loop(){
 #if MODE == MODE_TIME_AFER_TRIG
   // Wait for Trigger
@@ -128,13 +134,17 @@ void loop(){
     // Do his task when no trigger
     if (digitalRead(TRIG_P_PIN)){
       trig_p_event = 1;
-      debug_serial->printf("Trigger_P Event");
+      #ifdef DEBUG_SYSTEM_ENABLE
+        debug_serial->printf("Trigger_P Event");
+      #endif
     }
 #ifdef TRIG_N_ENABLE
     else if (digitalRead(TRIG_N_PIN))
     {
       trig_n_event = 1;
-      debug_serial->printf("Trigger_N Event");
+      #ifdef DEBUG_SYSTEM_ENABLE
+        debug_serial->printf("Trigger_N Event");
+      #endif
     }
 #endif // TRIG_N_ENABLE
   }else{
@@ -145,9 +155,11 @@ void loop(){
     // Wait until gps send new sentence
     while(gps_serial->available() == 0);
     gps_read();
-    trigger_sec = m_field_data.t_sec;
-    debug_serial->printf(", Trigger at Sec = %d\n", trigger_sec);
-  
+    m_field_data.t_trig_sec = m_field_data.t_sec;
+    #ifdef DEBUG_SYSTEM_ENABLE
+      debug_serial->printf(", Trigger at Sec = %d\n", m_field_data.t_trig_sec);
+    #endif
+
     // Wait until STM send message
     while(stm_serial->available() == 0);
     if (stm_read()) {
@@ -155,7 +167,7 @@ void loop(){
         calculate_data();
         String mqtt_payload = build_mqtt_payload();
         publish_data(mqtt_payload);
-        #ifdef DEBUG_FN_PRINT_DATA
+        #ifdef DEBUG_PRINT_DATA_ENABLE
           print_data();
         #endif
     } 
@@ -178,7 +190,7 @@ void loop(){
   #endif
 
 #else // MODE
-
+  // -- This is real time mode
   // Read GPS first, more important as it is affect timing
   if (gps_serial->available() != 0) {
     gps_read();
@@ -186,16 +198,15 @@ void loop(){
 
   if (stm_serial->available() != 0) {
     // Mark base time
-    trigger_sec = m_field_data.t_sec;
+    m_field_data.t_trig_sec = m_field_data.t_sec;
     if (stm_read()) {
       // Interpret and calculate and send data
       calculate_data();
-      String mqtt_payload = build_mqtt_payload();
-      //debug_serial->write(mqtt_payload.c_str());
-      //debug_serial->println("");
-
+      String mqtt_payload = build_mqtt_payload();      
       publish_data(mqtt_payload);
-      print_data();
+      #ifdef DEBUG_PRINT_DATA_ENABLE
+        print_data();
+      #endif
     }
   }
 
@@ -225,7 +236,9 @@ void gps_uart_send_cmd(char *cmd) {
     pcmd++;
   } while (*pcmd != '\0');
   sprintf(gps_cmd, "$%s*%02X\r\n", cmd, chksum);
-  debug_serial->print(gps_cmd);
+  #ifdef DEBUG_GPS_ENABLE
+    debug_serial->print(gps_cmd);
+  #endif
   gps_serial->print(gps_cmd);
   delay(500);
 }
@@ -303,8 +316,6 @@ int gps_read() {
   return ret_val;
 }
 
-
-
 /*
   // Format : $STMFIELD,AAAA,BBBB,CCCC,DDDD*XX<CR><LF>
 */
@@ -327,8 +338,6 @@ int stm_read() {
   String ew_min_c;
 
   String chksum;
-
-
 
   byte_read = stm_serial->readBytes(stm_byte, STM_SENTENCE_MAX_LEN);
   stm_sentence = String(stm_byte);
@@ -402,7 +411,7 @@ String build_mqtt_payload() {     // BUG!! - when single digit (hour/min) should
 
 #ifdef MQTT_EXTRA_INFO_TIME
   json_payload["GPSTIME"] = m_field_data.gnss_time;
-  json_payload["REFTIME_SEC"] = m_field_data.t_base_sec;
+  json_payload["REFTIME_SEC"] = m_field_data.t_trig_sec;
 #endif
 
   serializeJson(json_payload, str);
@@ -414,14 +423,17 @@ String build_mqtt_payload() {     // BUG!! - when single digit (hour/min) should
 */
 
 void publish_data(String mqtt_payload) {
-  //if() {
-  char mqtt_topic[100];
+  
+  // TODO : To check the connection status first
+  if(1) {
+    char mqtt_topic[MQTT_PAYLOAD_MAX_LEN];
+    sprintf(mqtt_topic, "%s/%s/%s%03d", MQTT_TOPIC_PUB_NAME, MQTT_TOPIC_PUB_VER, MQTT_TOPIC_PUB_DEV_NAME, MQTT_TOPIC_PUB_DEV_ID);
+    mqtt_client.publish(mqtt_topic, mqtt_payload.c_str());
 
-  sprintf(mqtt_topic, "%s/%s/%s%03d", MQTT_TOPIC_PUB_NAME, MQTT_TOPIC_PUB_VER, MQTT_TOPIC_PUB_DEV_NAME, MQTT_TOPIC_PUB_DEV_ID);
-
-  debug_serial->printf("Publish %d byte to Topic %s, with data = %s\n", strlen(mqtt_payload.c_str()), mqtt_topic, mqtt_payload.c_str());
-  mqtt_client.publish(mqtt_topic, mqtt_payload.c_str());
-  //}
+    #ifdef DEBUG_MQTT_ENABLE
+      debug_serial->printf("Publish %d byte to Topic %s, with data = %s\n", strlen(mqtt_payload.c_str()), mqtt_topic, mqtt_payload.c_str());
+    #endif
+  }
 }
 
 
@@ -485,21 +497,16 @@ double cal_time(uint8_t t_base, uint32_t t_counter) {
 
 void calculate_data() {
   m_field_data.ns_max_v = cal_voltage(m_field_data.ns_max_adc);
-  //m_field_data.ns_max_t_sec = cal_time(m_field_data.t_base_sec, m_field_data.ns_max_c);
-  m_field_data.ns_max_t_sec = cal_time(trigger_sec, m_field_data.ns_max_c);
+  m_field_data.ns_max_t_sec = cal_time(m_field_data.t_trig_sec, m_field_data.ns_max_c);  
 
   m_field_data.ns_min_v = cal_voltage(m_field_data.ns_min_adc);
-  //m_field_data.ns_min_t_sec = cal_time(m_field_data.t_base_sec, m_field_data.ns_min_c);
-  m_field_data.ns_min_t_sec = cal_time(trigger_sec, m_field_data.ns_min_c);
+  m_field_data.ns_min_t_sec = cal_time(m_field_data.t_trig_sec, m_field_data.ns_min_c);
 
   m_field_data.ew_max_v = cal_voltage(m_field_data.ew_max_adc);
-  //m_field_data.ew_max_t_sec = cal_time(m_field_data.t_base_sec, m_field_data.ew_max_c);
-  m_field_data.ew_max_t_sec = cal_time(trigger_sec, m_field_data.ew_max_c);
-
+  m_field_data.ew_max_t_sec = cal_time(m_field_data.t_trig_sec, m_field_data.ew_max_c);
 
   m_field_data.ew_min_v = cal_voltage(m_field_data.ew_min_adc);
-  //m_field_data.ew_min_t_sec = cal_time(m_field_data.t_base_sec, m_field_data.ew_min_c);
-  m_field_data.ew_min_t_sec = cal_time(trigger_sec, m_field_data.ew_min_c);
+  m_field_data.ew_min_t_sec = cal_time(m_field_data.t_trig_sec, m_field_data.ew_min_c);
 }
 // ====================================================================================================================
 
@@ -521,11 +528,15 @@ void serial_setup() {
   stm_serial->begin(115200, SERIAL_8N1, 12, 2);
   debug_serial->begin(115200, SERIAL_8N1, 3, 1);
   delay(2000);
-  debug_serial->println("- Serial setup : Done");
+  #ifdef DEBUG_SYSTEM_ENABLE
+    debug_serial->println("- Serial setup : Done");
+  #endif
 }
 
 void gps_setup() {
-  debug_serial->print("- GPS Setup : ");
+  #ifdef DEBUG_SYSTEM_ENABLE
+    debug_serial->print("- GPS Setup : ");
+  #endif
   gps_uart_send_cmd("PERDCFG,NMEAOUT,ALL,0");      // turn off all NMEA output sentences
   gps_uart_send_cmd("PERDAPI,CROUT,DGJPQWXYZ,0");  // turn off all CR output sentences
   gps_uart_send_cmd("PERDCFG,UART1,115200");       // Change GPS uart buadrate
@@ -541,19 +552,29 @@ void gps_setup() {
     if the version returned corecttly
   */
   gps_uart_send_cmd("PERDCFG,NMEAOUT,GLL,1");  // Enable GLL sentence every second
-  debug_serial->println("Done");
+  #ifdef DEBUG_SYSTEM_ENABLE
+    debug_serial->println("Done");
+  #endif
 }
 
 void ethernet_setup() {
-  debug_serial->println("- Setup Ethernet & MQTT");
+  #ifdef DEBUG_SYSTEM_ENABLE
+    debug_serial->println("- Setup Ethernet & MQTT");
+  #endif
 
   Ethernet.init(driver);
-  debug_serial->println("-- Initialize Ethernet with DHCP:");
+
+  #ifdef DEBUG_SYSTEM_ENABLE
+    debug_serial->println("-- Initialize Ethernet with DHCP:");
+  #endif
+
   if (Ethernet.begin() == 0) {
     debug_serial->println("--- Failed to configure Ethernet using DHCP");
     // Check for Ethernet hardware present
     if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-      debug_serial->println("--- Ethernet shield was not found.  Sorry, can't run without hardware. :(");
+      #ifdef DEBUG_SYSTEM_ENABLE
+        debug_serial->println("--- Ethernet shield was not found.  Sorry, can't run without hardware. :(");
+      #endif
       while (true) {
         delay(10000);  // do nothing, no point running without Ethernet hardware
         ESP.restart();
@@ -565,8 +586,10 @@ void ethernet_setup() {
     // try to configure using IP address instead of DHCP:
     Ethernet.begin(ip);
   } else {
-    debug_serial->print("--- DHCP assigned IP ");
-    debug_serial->println(Ethernet.localIP());
+    #ifdef DEBUG_SYSTEM_ENABLE
+      debug_serial->print("--- DHCP assigned IP ");
+      debug_serial->println(Ethernet.localIP());
+    #endif
   }
 }
 
@@ -581,11 +604,15 @@ void mqtt_setup() {
   mqtt_client.setBufferSize(512);
 
   while (!mqtt_client.connected()) {
-    debug_serial->print("Attempting MQTT connection to ");
-    debug_serial->println(MQTT_SERVER);
+    #ifdef DEBUG_SYSTEM_ENABLE
+      debug_serial->print("Attempting MQTT connection to ");
+      debug_serial->println(MQTT_SERVER);
+    #endif
 
     if (mqtt_client.connect(mqtt_id, mqtt_user, mqtt_pass)) {
-      debug_serial->println("...connected");
+      #ifdef DEBUG_SYSTEM_ENABLE
+        debug_serial->println("...connected");
+      #endif
 
       // Once connected, publish an announcement...
       //String data = "Hello from MQTTClient_SSL on " + String(BOARD_NAME);
@@ -605,77 +632,16 @@ void mqtt_setup() {
       // This is a workaround to address https://github.com/OPEnSLab-OSU/SSLClient/issues/9
       //ethClientSSL.flush();
     } else {
-      debug_serial->print("...failed, rc=");
-      debug_serial->print(mqtt_client.state());
-      debug_serial->println(" try again in 5 seconds");
-
+      #ifdef DEBUG_SYSTEM_ENABLE
+        debug_serial->print("...failed, rc=");
+        debug_serial->print(mqtt_client.state());
+        debug_serial->println(" try again in 5 seconds");
+      #endif
       // Wait 5 seconds before retrying
       delay(5000);
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-
-
-
-
-// Send data over MQTT
-void send_data(DataRecord_t rec){
-  JsonDocument json_payload;
-  String mqtt_payload;
-
-  //json_payload["ID"] = rec.id;
-  //json_payload["SERIAL"] = rec.serial;
-  //json_payload["BASE_TIME"] = "";
-  json_payload["NS_MAX_V"] = rec.max_ns_v;
-  json_payload["max_ns_t"] = rec.max_ns_t;
-  json_payload["MAX_EW_V"] = rec.max_ew_v;
-  json_payload["max_ew_t"] = rec.max_ew_t;
-  json_payload["LAT"] = rec.pos_lat;
-  json_payload["LONG"] = rec.pos_long;
-  json_payload["GPSTIME"] = rec.gps_time;
-  
-  serializeJson(json_payload, mqtt_payload);
-  publish_data(mqtt_payload);
-}*/
-
-
-
-
-
-
-
-
-
-
-
 
 /*
 // ================================================================================== //
@@ -684,23 +650,22 @@ Key functions and Loop function below
 */
 
 
-
-
-
 void callback(char *topic, byte *payload, unsigned int length) {
-  debug_serial->print("Message arrived [");
-  debug_serial->print(topic);
-  debug_serial->print("] ");
+  #ifdef DEBUG_MQTT_ENABLE
+    debug_serial->print("Message arrived [");
+    debug_serial->print(topic);
+    debug_serial->print("] ");
+  
+    for (unsigned int i = 0; i < length; i++) {
+      debug_serial->print((char)payload[i]);
+    }
 
-  for (unsigned int i = 0; i < length; i++) {
-    debug_serial->print((char)payload[i]);
-  }
-
-  debug_serial->println();
+    debug_serial->println();
+  #endif
 }
 
 
-#ifdef DEBUG_FN_PRINT_DATA
+#ifdef DEBUG_PRINT_DATA_ENABLE
 
 void print_data() {
   DataRecord_t rec = m_field_data;

@@ -8,10 +8,10 @@
   #define MODE                  MODE_TIME_AFER_TRIG
   
   
-  #define TRIG_N_ENABLE
-  #define ETH_ENABLE
-  #define MQTT_ENABLE
-  
+  //#define TRIG_N_ENABLE
+  //#define ETH_ENABLE
+  //#define MQTT_ENABLE
+  #define WATCHDOG_ENABLE
 
   // IO //
   #define TRIG_P_PIN      14
@@ -20,9 +20,12 @@
   // DEBUG SECTION //  
   #define DEBUG_PRINT // Comment this line to DISABLE ALL debug
 
-  #ifdef DEBUG_PRINT   // Comment each line below to DISABLE each function debug
+  // Comment each line below to DISABLE each function debug
+  #ifdef DEBUG_PRINT
     //#define DEBUG_GPS_ENABLE
-    #define DEBUG_FN_PRINT_DATA  
+    #define DEBUG_MQTT_ENABLE
+    #define DEBUG_PRINT_DATA_ENABLE
+    #define DEBUG_SYSTEM_ENABLE
   #endif
 
   // SYSTEM CONFIGURATION //
@@ -40,23 +43,9 @@
 
   // STM SECTION //  
   #define STM_SENTENCE_MAX_LEN  100
-
- 
-/*
-#define ADC_VREF_P			2.003
-#define ADC_VREF_N			0.994
-#define ADC_OFFSET			1.55
-#define ADC_R1          10000.0
-#define ADC_R2          4320.0
-*/
-
-#define ADC_VREF_P						2.048
-#define ADC_VREF_N						0.988
-#define ADC_OFFSET						1.52
-#define ADC_R1         				 	10000.0
-#define ADC_R2          				4320.0
   
   // MQTT SECTION //
+  #define MQTT_PAYLOAD_MAX_LEN  100
   #define MQTT_SELECT 2
 
   #if MQTT_SELECT == 1
@@ -77,12 +66,32 @@
   #define MQTT_TOPIC_PUB_DEV_NAME   "kumwell"
   #define MQTT_TOPIC_PUB_DEV_ID     1
 
-
-
   // CONFIG MQTT JSON EXTRA INFO
   #define MQTT_EXTRA_INFO_ADC
   #define MQTT_EXTRA_INFO_TIMER_COUNTER
   #define MQTT_EXTRA_INFO_TIME
+
+
+
+
+
+
+/*
+#define ADC_VREF_P			2.003
+#define ADC_VREF_N			0.994
+#define ADC_OFFSET			1.55
+#define ADC_R1          10000.0
+#define ADC_R2          4320.0
+*/
+
+#define ADC_VREF_P						2.048
+#define ADC_VREF_N						0.988
+#define ADC_OFFSET						1.52
+#define ADC_R1         				 	10000.0
+#define ADC_R2          				4320.0
+  
+  // MQTT SECTION //
+
 
   
 #endif
